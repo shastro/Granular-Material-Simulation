@@ -6,51 +6,34 @@
 /////////////
 
 
-void Ball::applyForce(sf::Vector2f force)
+void Ball::applyForce(sf::Vector2f force, double time_delta)
 {
+	
 	m_acc = m_acc + mult2f(force, 1 / m_mass);
 
 }
 
 //Updates position and velocities of objects, performs no or very little physics calculation, is only responsible for translating acceleration to position
-void Ball::update()
+void Ball::update(double time_delta)
 {
-	m_acc = m_acc + sf::Vector2f(0.0, 0.025); //Gravity
-	m_vel = m_vel + m_acc;
-	m_pos = m_pos + m_vel;
-	m_acc = sf::Vector2f(0, 0);
+	applyForce(sf::Vector2f(0.0, 300), time_delta);
 
-	if(mag2f(m_vel) < 0.01){
+	sf::Vector2f m_acc_cpy = m_acc;
+	sf::Vector2f m_vel_cpy = m_vel;
+
+	m_vel = m_vel + mult2f_cpy(m_acc, time_delta);
+	m_pos = m_pos + mult2f_cpy(m_vel, time_delta);
+	m_acc = sf::Vector2f(0, 0);
+	
+	mult2f(m_p, m_mass); //Momenta
+
+	//Speed Clamping at Rest
+	if(mag2f(m_vel) < 0.00005){
 		mult2f(m_vel, 0);
 	}
 
+	float c_e = 0.5; //Coefficient of Elasticity (roughly speaking) this only applies to wall collision 
 
-	// if (Ball::is_Ball_Collide(other)) {
-
-	// 	// sf::Vector2f norm = m_pos - other.m_pos; 
-	// 	// // Calculate displacement required
-	// 	// float fOverlap = 0.5f * (mag2f(norm) - m_radius - other.m_radius);
-
-	// 	// // Displace Current Ball away from collision
-	// 	// // ball.px -= fOverlap * (ball.px - target.px) / fDistance;
-	// 	// // ball.py -= fOverlap * (ball.py - target.py) / fDistance;
-
-	// 	// m_pos = m_pos - mult2f(norm, fOverlap/mag2f(norm));
-	// 	// // Displace Target Ball away from collision
-	// 	// // target.px += fOverlap * (ball.px - target.px) / fDistance;
-	// 	// // target.py += fOverlap * (ball.py - target.py) / fDistance;
-
-	// 	// other.m_pos = other.m_pos + mult2f(norm, fOverlap/mag2f(norm));
-
-
-	// 	sf::Vector2f force = m_pos - other.m_pos;
-	// 	force = mult2f(force, mag2f(force));
-	// 	applyForce(mult2f(force, 100/ (float) dist2f(m_pos, other.m_pos)));
-
-	// }
-
-
-	float c_e = 0.8; //Coefficient of Elasticity
 	//Edge Detection
 	if (m_pos.x + m_radius > (*m_window).getSize().x) {
 		m_pos.x = (*m_window).getSize().x - m_radius;
@@ -72,11 +55,12 @@ void Ball::update()
 	}
 
 	//Air Drag
-	m_vel = mult2f(m_vel, 0.9999);
+	//mult2f(m_vel, 0.975);
+	applyForce(mult2f_cpy(m_vel, -10), time_delta);
 
 }
 
-//Spring Force, sums of momentum divided by radius squared
+//Spring Force, sums of momentum divided by radii sum squared
 
 ///////////////
 // RENDERING //
@@ -89,7 +73,7 @@ void Ball::draw() {
 	if(colliding){
 		m_color = sf::Color::Red;
 	}else{
-		double hue_val = l_map((double)mag2f(m_vel), 0.0, 5, 235, 130);
+		double hue_val = l_map((double)mag2f(m_vel), 0.0, 10, 235, 130);
 		m_color = hsv((int)hue_val, 1.0f, 1.0f);
 	}
 

@@ -18,7 +18,10 @@ inline sf::Vector2f mult2f(sf::Vector2f& a, float C)
 
 	return a;
 }
-
+inline sf::Vector2f mult2f_cpy(sf::Vector2f a, float C)
+{
+	return sf::Vector2f(a.x * C, a.y *C);
+}
 inline float mag2f(sf::Vector2f& a)
 {
 	return sqrt(a.x*a.x + a.y*a.y);

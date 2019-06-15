@@ -1,2 +1,5 @@
 *.o
 ./build/makefile_backup
+./bin/GranularSimulation
+*.make
+./build/Makefile

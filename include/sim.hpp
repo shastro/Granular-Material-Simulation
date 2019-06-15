@@ -16,10 +16,12 @@ private:
 	sf::RenderWindow *m_window;
 
 //Simulation Properties
-	double timestep;
-	int   steps;
-	double dt;
+	double fSimElapsedTime;
+	int   nSimulationSubSteps; //Subframes
+public:
+	double dt; //Change in time between frames
 
+private:
 //Simulation Data
 	std::vector<Ball> Not_Collided;
 	std::vector<Ball> Collided;
@@ -32,7 +34,7 @@ public:
 
 		this->n = n;
 		this->m_window = window;
-		this->steps = steps;
+		this->nSimulationSubSteps = steps;
 
 		//Create Balls with random initial data.
 		for (int i = 0; i < n; i++) {
@@ -44,7 +46,7 @@ public:
 			float vel_x = frandom(-1.3, 1.3);
 			float vel_y = frandom(-1.3, 1.3);
 
-			float mass = frandom(500, 1500);
+			float mass = radius * 50;
 			Ball *ball = new Ball(sf::Vector2f((float)pos_x, (float)pos_y), sf::Vector2f(vel_x, vel_y), radius, mass, m_window);
 			ball->id = i;
 			auto s = std::to_string(ball->id);
@@ -54,9 +56,12 @@ public:
 		}
 	}
 
+	void simLoop();
+
 	void detectCollisions();
 	void calcSteps();
 	void drawElements();
+	void updateTimeData();
 
 private:
 	void applyBallResponse(Ball& ball, Ball& ball2);

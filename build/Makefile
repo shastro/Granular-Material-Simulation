@@ -9,26 +9,26 @@ ifndef verbose
 endif
 
 ifeq ($(config),debug)
-  Granular_Simulation_config = debug
+  GranularSimulation_config = debug
 endif
 ifeq ($(config),release)
-  Granular_Simulation_config = release
+  GranularSimulation_config = release
 endif
 
-PROJECTS := Granular\ Simulation
+PROJECTS := GranularSimulation
 
 .PHONY: all clean help $(PROJECTS) 
 
 all: $(PROJECTS)
 
-Granular\ Simulation:
-ifneq (,$(Granular_Simulation_config))
-	@echo "==== Building Granular Simulation ($(Granular_Simulation_config)) ===="
-	@${MAKE} --no-print-directory -C . -f Granular\ Simulation.make config=$(Granular_Simulation_config)
+GranularSimulation:
+ifneq (,$(GranularSimulation_config))
+	@echo "==== Building GranularSimulation ($(GranularSimulation_config)) ===="
+	@${MAKE} --no-print-directory -C . -f GranularSimulation.make config=$(GranularSimulation_config)
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C . -f Granular\ Simulation.make clean
+	@${MAKE} --no-print-directory -C . -f GranularSimulation.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -40,6 +40,6 @@ help:
 	@echo "TARGETS:"
 	@echo "   all (default)"
 	@echo "   clean"
-	@echo "   Granular Simulation"
+	@echo "   GranularSimulation"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"

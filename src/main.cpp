@@ -3,8 +3,6 @@
 #include "utils.hpp"
 #include "sim.hpp"
 
-#define TIME_DELTA 0.1 //ms
-
 int main(int argc, char **argv) {
 
 
@@ -26,7 +24,7 @@ int main(int argc, char **argv) {
     sf::RenderWindow window(sf::VideoMode(1000, 1000), "Physics Simulation");
 
     //Engine Initialization
-    Simulation_Engine *Engine = new Simulation_Engine(10, 50, &window);
+    Simulation_Engine *Engine = new Simulation_Engine(50, 100, &window);
 
     // MAIN FRAMELOOP //
     while (window.isOpen())
@@ -40,17 +38,9 @@ int main(int argc, char **argv) {
         }
 
         window.clear();
-
-        //MAIN LOGIC//
-        Engine->detectCollisions();
-        Engine->calcSteps();
-        Engine->drawElements();
-
-
-
-
-        
+        Engine->simLoop();
         window.display();
+        
     }
 
 
