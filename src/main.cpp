@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 
 
     // WINDOW SETUP //
-    sf::RenderWindow window(sf::VideoMode(1000, 1000), "Waddup");
+    sf::RenderWindow window(sf::VideoMode(1000, 1000), "Physics Simulation");
 
     //Engine Initialization
     Simulation_Engine *Engine = new Simulation_Engine(10, 50, &window);

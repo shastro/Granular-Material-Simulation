@@ -44,7 +44,7 @@ public:
 
 		m_window = window;
 
-	    // if (!font.loadFromFile("font.ttc"))
+	    // if (!font.loadFromFile("../assets/font.ttc"))
 	    // {
 	    //     LOG("[ERROR]: Font Not Found")
 	    // }
