@@ -2,8 +2,9 @@
 #define UTILS_H
 
 #include "basic.hpp"
+#include <iomanip>
 
-#define LOG(x) std::cout << x << std::endl;
+#define LOG(label, value) std::cout /*'\r' << std::setw(10) << std::setfill('0')*/ << label << value << std::endl;
 
 //Returns the square of the distance between two points
 inline float dist2f(sf::Vector2f& a, sf::Vector2f& b)
@@ -18,10 +19,12 @@ inline sf::Vector2f mult2f(sf::Vector2f& a, float C)
 
 	return a;
 }
+
 inline sf::Vector2f mult2f_cpy(sf::Vector2f a, float C)
 {
 	return sf::Vector2f(a.x * C, a.y *C);
 }
+
 inline float mag2f(sf::Vector2f& a)
 {
 	return sqrt(a.x*a.x + a.y*a.y);

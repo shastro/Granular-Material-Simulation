@@ -12,6 +12,6 @@
 #include <vector>
 
 #include <math.h>
-
-
+enum COLLISION_MODE{HERTZ, HERTZ_DAMP};
+enum SIMULATION_MODE{REALTIME, DATA_WRITE, DATA_DISPLAY};
 #endif

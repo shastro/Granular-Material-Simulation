@@ -18,43 +18,19 @@ private:
 //Simulation Properties
 	double fSimElapsedTime;
 	int   nSimulationSubSteps; //Subframes
+	int m_COLLISION_MODE;
 public:
 	double dt; //Change in time between frames
+	bool mouseState; //Mouse state, 0 for released, 1 for clicked
 
 private:
 //Simulation Data
-	std::vector<Ball> Not_Collided;
+	std::vector<Ball> vecBalls;
 	std::vector<Ball> Collided;
 	int n;
 
 public:
-	Simulation_Engine(int steps, int n, sf::RenderWindow *window) {
-		//Time and Random number initialization
-		srand(time(NULL));
-
-		this->n = n;
-		this->m_window = window;
-		this->nSimulationSubSteps = steps;
-
-		//Create Balls with random initial data.
-		for (int i = 0; i < n; i++) {
-		
-			int radius = random(20, 55); //Random between 50 and 150;
-			int pos_x  = random(radius + 2, (*m_window).getSize().x - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
-			int pos_y  = random(radius + 2, (*m_window).getSize().y - radius - 2);
-		
-			float vel_x = frandom(-1.3, 1.3);
-			float vel_y = frandom(-1.3, 1.3);
-
-			float mass = radius * 50;
-			Ball *ball = new Ball(sf::Vector2f((float)pos_x, (float)pos_y), sf::Vector2f(vel_x, vel_y), radius, mass, m_window);
-			ball->id = i;
-			auto s = std::to_string(ball->id);
-			ball->text.setString(s.c_str());
-			Not_Collided.emplace_back(*ball);
-		
-		}
-	}
+	Simulation_Engine(int steps, int n, sf::RenderWindow *window, int COLLISION_MODE);
 
 	void simLoop();
 
@@ -62,10 +38,12 @@ public:
 	void calcSteps();
 	void drawElements();
 	void updateTimeData();
+	void handleMouseEvent(sf::Vector2f mousePos);
 
 private:
 	void applyBallResponse(Ball& ball, Ball& ball2);
 	bool checkBallIntersect(Ball& ball1, Ball& ball2);
+	Ball findClosestBall(sf::Vector2f mousePos);
 
 
 
