@@ -1,0 +1,159 @@
+{
+	"SIM_NAME" : "NAME",
+	"SIM_DATE" : "DATE",
+	"SIM_CONTACT_MODE" : "HERTZ",
+
+	"WINDOW_DATA" : 
+	{
+		"width"  : 1000,
+		"height" : 1000,
+	},
+
+	"FRAME_DATA" : 
+	[
+
+		{
+			"frame_cnt" : 0,
+			"SUBFRAMES" : 
+			[
+				{
+					"sub_frame" : 0,
+					"particles" : 
+					[
+						{
+							"particle_id" : 0,
+							"particle_data" : 
+							{
+								"position" : {"x": 100.2, "y" : 50.39},
+								"velocity" : {"x": 10.2, "y": 0},
+								"acceleration" : {"x": 20.0, "y" : 10},
+								"sf_COLOR" : "RED",
+								"radius" : 5
+
+							}
+						},
+
+						{
+							"particle_id" : 1,
+							"particle_data" : 
+							{
+								"position" : {"x": 20.2, "y" : 30.39},
+								"velocity" : {"x": 5.2, "y": 0},
+								"acceleration" : {"x": 10.0, "y" : 10},
+								"sf_COLOR" : "BLUE",
+								"radius" : 20
+
+							}
+						}
+					],
+				},
+				{
+					"sub_frame" : 1,
+					"particles" : 
+					[
+						{
+							"particle_id" : 0,
+							"particle_data" : 
+							{
+								"position" : {"x": 100.2, "y" : 50.39},
+								"velocity" : {"x": 10.2, "y": 0},
+								"acceleration" : {"x": 20.0, "y" : 10},
+								"sf_COLOR" : "RED",
+								"radius" : 5
+
+							}
+						},
+
+						{
+							"particle_id" : 1,
+							"particle_data" : 
+							{
+								"position" : {"x": 20.2, "y" : 30.39},
+								"velocity" : {"x": 5.2, "y": 0},
+								"acceleration" : {"x": 10.0, "y" : 10},
+								"sf_COLOR" : "BLUE",
+								"radius" : 20
+
+							}
+						}
+					],
+				}
+			]
+		},
+		{
+			"frame_cnt" : 1,
+			"SUBFRAMES" : 
+			[
+				{
+					"sub_frame" : 0,
+					"particles" : 
+					[
+						{
+							"particle_id" : 0,
+							"particle_data" : 
+							{
+								"position" : {"x": 100.2, "y" : 50.39},
+								"velocity" : {"x": 10.2, "y": 0},
+								"acceleration" : {"x": 20.0, "y" : 10},
+								"sf_COLOR" : "RED",
+								"radius" : 5
+
+							}
+						},
+
+						{
+							"particle_id" : 1,
+							"particle_data" : 
+							{
+								"position" : {"x": 20.2, "y" : 30.39},
+								"velocity" : {"x": 5.2, "y": 0},
+								"acceleration" : {"x": 10.0, "y" : 10},
+								"sf_COLOR" : "BLUE",
+								"radius" : 20
+
+							}
+						}
+					],
+				},
+				{
+					"sub_frame" : 1,
+					"particles" : 
+					[
+						{
+							"particle_id" : 0,
+							"particle_data" : 
+							{
+								"position" : {"x": 100.2, "y" : 50.39},
+								"velocity" : {"x": 10.2, "y": 0},
+								"acceleration" : {"x": 20.0, "y" : 10},
+								"sf_COLOR" : "RED",
+								"radius" : 5
+
+							}
+						},
+
+						{
+							"particle_id" : 1,
+							"particle_data" : 
+							{
+								"position" : {"x": 20.2, "y" : 30.39},
+								"velocity" : {"x": 5.2, "y": 0},
+								"acceleration" : {"x": 10.0, "y" : 10},
+								"sf_COLOR" : "BLUE",
+								"radius" : 20
+
+							}
+						}
+					],
+				}
+			]
+		}
+
+	]
+
+
+
+
+
+
+}
