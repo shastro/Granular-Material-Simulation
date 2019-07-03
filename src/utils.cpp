@@ -17,6 +17,7 @@ double l_map(double x, double input_start, double input_end, double output_start
 }
 
 // hue: 0-360°; sat: 0.f-1.f; val: 0.f-1.f
+//This function was not written by Skyler Hughes
 sf::Color hsv(int hue, float sat, float val)
 {
   hue %= 360;
@@ -41,8 +42,28 @@ sf::Color hsv(int hue, float sat, float val)
     case 6: return sf::Color(val*255, t*255, p*255);
     case 1: return sf::Color(q*255, val*255, p*255);
     case 2: return sf::Color(p*255, val*255, t*255);
-    case 3: return sf::Color(p*255, q*255, val*255);
-    case 4: return sf::Color(t*255, p*255, val*255);
+    case 3: return sf::Color(p*255,   q*255, val*255);
+    case 4: return sf::Color(t*255,   p*255, val*255);
     case 5: return sf::Color(val*255, p*255, q*255);
   }
+}
+
+unsigned long int_concat(unsigned long a, unsigned long b)
+{
+  unsigned long pow = 10;
+  while(b >= pow)
+    pow *= 10;
+
+  return a * pow + b;
+}
+unsigned long stringtocharval(const char *string)
+{
+  unsigned long output = *string;
+  string++;
+  while(*string != '\0')
+  {
+    output = int_concat(output, *string);
+    string++;
+  }
+  return output;
 }

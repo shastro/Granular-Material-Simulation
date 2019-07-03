@@ -1,31 +1,29 @@
 #include "sim.hpp"
 
-Simulation_Engine::Simulation_Engine(int steps, int n, sf::RenderWindow *window, int COLLISION_MODE)
+Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE)
  {
 	//Time and Random number initialization
 	srand(time(NULL));
 
 	this->n = n;
-	this->m_window = window;
 	this->nSimulationSubSteps = steps;
 	m_COLLISION_MODE = COLLISION_MODE;
-	mouseState = false;
+
 
 	//Create Balls with random initial data.
 	for (int i = 0; i < n; i++) {
 	
 		int radius = random(5, 10); //Random between 50 and 150;
-		int pos_x  = random(radius + 2, (*m_window).getSize().x - 100 - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
-		int pos_y  = random(radius + 2, (*m_window).getSize().y - 100- radius - 2);
+		int pos_x  = random(radius + 2, window->width  - 100 - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
+		int pos_y  = random(radius + 2, window->height - 100- radius  - 2);
 	
 		float vel_x = frandom(-1.3, 1.3);
 		float vel_y = frandom(-1.3, 1.3);
 
 		float mass = radius * 100;
-		Ball *ball = new Ball(sf::Vector2f((float)pos_x, (float)pos_y), sf::Vector2f(vel_x, vel_y), radius, mass, m_window);
+		Ball *ball = new Ball(sf::Vector2f((float)pos_x, (float)pos_y), sf::Vector2f(vel_x, vel_y), radius, mass, window);
 		ball->id = i;
 		auto s = std::to_string(ball->id);
-		ball->text.setString(s.c_str());
 		vecBalls.emplace_back(*ball);
 	
 	}
@@ -69,24 +67,42 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 			{//Scope Wrapping
 
+			////////////////////
+
+			// Normal Vector //
+
 			sf::Vector2f normal = ball1.m_pos - ball2.m_pos; //Vector normal to point of contact
 			float dist = mag2f(normal); //Capture the distance
 			mult2f(normal, 1.0f / dist); //Normalize the normal vector
+
+			////////////////////
+
+			// Overlap //
+
 			float overlap = dist - (ball1.m_radius - ball2.m_radius);
 			
-			//Calculate Effective Modulus of Elasticity
+			///////////////////
+
+			// Calculate Effective Modulus of Elasticity //
+
 			float E_eff = 1.0f / (((1 - ball1.v_p * ball1.v_p) / ball1.E) + ((1 - ball2.v_p * ball2.v_p) / ball1.E)); 
 			float r_eff = 1.0f / ((1/ball1.m_radius) + (1/ball2.m_radius));
 
+			//////////////////
 
-			//Hertzian Stiffness
+			// Hertzian Stiffness //
+
 			float k_hz  = (1.33333333) * sqrt(r_eff) * E_eff;
 			float f_mag = k_hz * pow(overlap, 1.5);
 			sf::Vector2f force = mult2f_cpy(normal, f_mag);
 
-			//ApplyForce
-			ball1.applyForce(force, fSimElapsedTime);	// 	sf::Vector2f force = m_pos - other.m_pos;
+			//////////////////
+
+			// ApplyForce //
+
+			ball1.applyForce(force, fSimElapsedTime);
 			ball2.applyForce(mult2f(force, -1), fSimElapsedTime);
+
 
 			}//Scope Wrapping
 
@@ -168,53 +184,35 @@ void Simulation_Engine::calcSteps()
 
 }
 
-//Handles Drawing
-void Simulation_Engine::drawElements()
-{
-	for (int i = 0; i < n; i++) {
-		vecBalls.at(i).draw();
-	}
-}
+// //Handles Drawing
+// void Simulation_Engine::drawElements()
+// {
+// 	for (int i = 0; i < n; i++) {
+// 		vecBalls.at(i).draw();
+// 	}
+// }
 
 void Simulation_Engine::updateTimeData()
 {
 	fSimElapsedTime = dt / (double) nSimulationSubSteps;
 }
 
-Ball Simulation_Engine::findClosestBall(sf::Vector2f mousePos)
-{
-	sf::Vector2f min(100000, 100000);
-	Ball *closestBall;
-	for(auto ball : vecBalls)
-	{
-		if(dist2f(ball.m_pos, mousePos) < mag2f(min)){
-			min = ball.m_pos;
-			LOG("MIN", mag2f(min))
-			closestBall = &ball;
+// Ball Simulation_Engine::findClosestBall(sf::Vector2f mousePos)
+// {
+// 	sf::Vector2f min(100000, 100000);
+// 	Ball *closestBall;
+// 	for(auto ball : vecBalls)
+// 	{
+// 		if(dist2f(ball.m_pos, mousePos) < mag2f(min)){
+// 			min = ball.m_pos;
+// 			LOG("MIN", mag2f(min))
+// 			closestBall = &ball;
 
-		}
-	}
-	LOG("CLOSEST ID", closestBall->id)
-	return *closestBall;
-}
-//This is too be called for as long as the mouse is clicked and dragged
-void Simulation_Engine::handleMouseEvent(sf::Vector2f mousePos){
-	mouseState = !mouseState;
-	Ball found = findClosestBall(mousePos);
-	if(!mouseState){
-		
-		if(dist2f(mousePos, found.m_pos) < (found.m_radius * found.m_radius)){
-			found.selected = true;
-			found.mousePos = mousePos;
-		}
-	}else{
-		found.selected = false;
-	}
-}
-
-
-
-
+// 		}
+// 	}
+// 	LOG("CLOSEST ID", closestBall->id)
+// 	return *closestBall;
+// }
 
 
 void Simulation_Engine::simLoop()
@@ -225,13 +223,12 @@ void Simulation_Engine::simLoop()
 		detectCollisions();
 		calcSteps();
 	}
-	drawElements();
+	//drawElements();
 
 
 	clock_t end = clock();
 	dt = (double) (end - start) / (CLOCKS_PER_SEC * 0.06);
-	//LOG("dt: ",dt)
-	//LOG("yolo: ", start);
+
 	updateTimeData();
 
 }

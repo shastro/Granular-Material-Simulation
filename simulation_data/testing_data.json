@@ -1,7 +1,7 @@
 {
 	"SIM_NAME" : "NAME",
 	"SIM_DATE" : "DATE",
-	"SIM_CONTACT_MODE" : "HERTZ",
+	"SIM_CONTACT_MODE" : "HERTZ_DAMP",
 
 	"WINDOW_DATA" : 
 	{
@@ -13,7 +13,7 @@
 	[
 
 		{
-			"frame_cnt" : 0,
+			"frame" : 0,
 			"SUBFRAMES" : 
 			[
 				{
@@ -27,7 +27,6 @@
 								"position" : {"x": 100.2, "y" : 50.39},
 								"velocity" : {"x": 10.2, "y": 0},
 								"acceleration" : {"x": 20.0, "y" : 10},
-								"sf_COLOR" : "RED",
 								"radius" : 5
 
 							}

@@ -24,25 +24,15 @@ public:
 	//Identification
 	unsigned int id;
 	bool colliding;
-	bool selected;
-	//Other
-	sf::Vector2f mousePos;
-	//SFML Data
-	sf::Color m_color;
-	sf::Font font;
-	sf::Text text;
-	float render_radius;
 
 private:
-	bool debug;	
-	sf::RenderWindow *m_window;
-	sf::CircleShape m_shape;
-	
+	bool debug;
+	struct window_t *m_window;		
 
 public:
 	//Constructor
-	Ball(sf::Vector2f pos, sf::Vector2f vel, float radius, float mass, sf::RenderWindow *window)
-		:m_pos(pos.x, pos.y), m_vel(vel.x, vel.y), m_acc(0.0f,0.0f), m_mass(mass), m_color(sf::Color::Blue)
+	Ball(sf::Vector2f pos, sf::Vector2f vel, float radius, float mass, struct window_t *window)
+		:m_pos(pos.x, pos.y), m_vel(vel.x, vel.y), m_acc(0.0f,0.0f), m_mass(mass)
 	{
 		//Constant Initialization
 		v_p = 0.5;
@@ -52,25 +42,11 @@ public:
 		//Member Assignment
 		m_radius = radius;
 		m_window = window;
-
-		//SFML
-		m_shape.setRadius(m_radius);
-		m_shape.setPointCount(100);
-		m_shape.setOrigin(m_radius,m_radius);
 		
 		//Momentum
 		m_p = m_vel;
 		mult2f(m_p, mass);
 
-		if(debug){
-		    if (!font.loadFromFile("../assets/font.ttc"))
-		    {
-		        //LOG("[ERROR]: Font Not Found")
-		    }
-		    text.setFont(font);
-		    text.setFillColor(sf::Color::White);
-		    text.setCharacterSize(100);
-		}
 
 	}
 
@@ -78,8 +54,6 @@ public:
 	void applyForce(sf::Vector2f force, double time_delta);
 	void update(double time_delta);
 
-	//Rendering
-	void draw();
 
 
 

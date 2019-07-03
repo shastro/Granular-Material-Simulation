@@ -44,7 +44,11 @@ inline float frandom(float a, float b)
 {
 	return a + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(b-a)));
 }
-
+//Concatenates two integers
+unsigned long int_concat(unsigned long a, unsigned long b);
+// Converts a string to an integer in which the integer is each of the strings char character's true integer value concatenated one after another
+// This is meant to be used like a hash function (except of course in this case, no hashing is done, and collisions are not possible)
+unsigned long stringtocharval(const char *string);
 // Linearly Maps a given value within a given range to a new value within a new range */
 double l_map(double x, double input_start, double input_end, double output_start, double output_end);
 // hue: 0-360°; sat: 0.f-1.f; val: 0.f-1.f
