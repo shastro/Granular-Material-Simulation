@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
         const char *SIM_FILENAME   = configdoc["SIM_FILENAME"].GetString();
         const char *COLLISION_MODE = configdoc["COLLISION_MODE"].GetString();
-        
+
         int C_MODEL = HERTZ; //Default Collision Model
 
         if(strcmp(COLLISION_MODE, "HERTZ") == 0){
@@ -78,6 +78,16 @@ int main(int argc, char **argv) {
 
         const char *data_json = "";
         const char *data_path = "../simulation_data/";
+
+    // MEMORY FRAME SAVE THRESHOLD //
+
+        int MEMORY_FRAME_SAVE_THRESHOLD = configdoc["MEMORY_FRAME_SAVE_THRESHOLD"].GetInt();
+
+    // Close Config //
+        free((void *)config_json);
+    /////////////////////////////////////////////
+    // DATA GENERATION - END OF CONFIG PARSING //
+    /////////////////////////////////////////////
 
     // Document Instantiation //
 
@@ -98,9 +108,26 @@ int main(int argc, char **argv) {
 
         memset(buffer, 0, sizeof(buffer));
 
+    // SIM DATE //
+
         datadoc.AddMember("SIM_DATE", "TEMP_DATE", allocator);
 
+    // FRAMELIMIT //
+        rj::Value frame_limit;
+        frame_limit.SetInt(FRAMELIMIT);
+        datadoc.AddMember("FRAMELIMIT", frame_limit, allocator);
+
+    // SUB FRAME COUNT //
+        rj::Value sf_cnt;
+        sf_cnt.SetInt(SUB_FRAME_COUNT);
+        datadoc.AddMember("SUB_FRAME_COUNT", sf_cnt, allocator);
+
     // SIM CONTACT MODE //
+        rj::Value contact_mode;
+        strncpy(buffer, COLLISION_MODE, strlen(COLLISION_MODE));
+        contact_mode.SetString(buffer, strlen(COLLISION_MODE), allocator);
+        datadoc.AddMember("SIM_CONTACT_MODE", contact_mode, allocator);
+        memset(buffer, 0, sizeof(buffer));
 
     // Window Data //
     rj::Value window_data(rj::kObjectType);
@@ -118,33 +145,56 @@ int main(int argc, char **argv) {
         // Adding Window Data
         datadoc.AddMember("WINDOW_DATA", window_data, allocator);
 
-    // Frame Data SetUp //
-    rj::Value frame_data(rj::kArrayType);
+
 
 
     // ENGINE INSTANTIATION //
 
-   // Simulation_Engine *Engine = new Simulation_Engine(SUB_FRAME_COUNT, PARTICLE_COUNT, window, C_MODEL, sj::Document *datadoc);
+   Simulation_Engine *Engine = new Simulation_Engine(SUB_FRAME_COUNT, PARTICLE_COUNT, window, C_MODEL, &datadoc);
 
-    // MAIN FRAME LOOP //
+   
+
+    // Frame Data SetUp //
+    rj::Value frame_data(rj::kArrayType);
+
+    int FILECOUNTER = 0;
+    FILE *dataout = fopen("../simulation_data/test.json", "w");
+    rj::StringBuffer s;
+    rj::PrettyWriter<rj::StringBuffer> writer(s);    
+   
+     // MAIN FRAME LOOP //
     for(long i = 0; i < FRAMELIMIT; i++){
-       // Engine->simLoop();
-    }
 
+        rj::Value cur_frame(rj::kObjectType);
+        cur_frame.AddMember("frame", rj::Value().SetInt(i), allocator);
+
+        Engine->simLoop(&cur_frame);
+        frame_data.PushBack(cur_frame, allocator);
+
+        if(i % MEMORY_FRAME_SAVE_THRESHOLD == 0){
+            
+            //datadoc.Accept(writer);
+        }
+        printf("FRAME: %ld\n", i);
+    }
+    //datadoc.AddMember(cur_frame, allocator);
+    datadoc.AddMember("FRAME_DATA", frame_data, allocator);
 
     // WRITING TO FILE //
 
-    FILE *dataout = fopen("../simulation_data/test.json", "w");
+     datadoc.Accept(writer);
 
-    char writeBuffer[65536];
-    rj::FileWriteStream os(dataout, writeBuffer, sizeof(writeBuffer));
-    rj::PrettyWriter<rj::FileWriteStream> writer(os);
-    datadoc.Accept(writer);
+    fprintf(dataout, "%s", s.GetString());
+    // std::ofstream ofs("../simulation_data/test.json");
+    // rj::OStreamWrapper osw(ofs);
+    // rj::PrettyWriter<rj::OStreamWrapper> writer(osw);
+    // datadoc.Accept(writer);
+    
+
 
     // clean up :)
-    //delete Engine;
+    delete Engine;
     fclose(dataout);
     free((void *)window);
-    free((void *)config_json);
     return 0;
 }

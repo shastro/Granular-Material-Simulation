@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cstdlib>
 
+#include "basic.hpp"
 #include "utils.hpp"
 #include "ball.hpp"
 
@@ -16,6 +17,8 @@ private:
 	double fSimElapsedTime;
 	int   nSimulationSubSteps; //Subframes
 	int m_COLLISION_MODE;
+
+	rj::Document *datadoc;
 public:
 	double dt; //Change in time between frames
 
@@ -26,12 +29,12 @@ private:
 	int n;
 
 public:
-	Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE);
+	Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Document *datadoc);
 
-	void simLoop();
+	void simLoop(rj::Value *cur_frame);
 
 	void detectCollisions();
-	void calcSteps();
+	void calcSteps(rj::Value *cur_sub_frame);
 	void updateTimeData();
 
 private:

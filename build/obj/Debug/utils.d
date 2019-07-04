@@ -21,7 +21,9 @@ obj/Debug/utils.o: ../src/utils.cpp ../include/utils.hpp \
  ../include/rapidjson/internal/dtoa.h \
  ../include/rapidjson/internal/itoa.h \
  ../include/rapidjson/internal/itoa.h ../include/rapidjson/stringbuffer.h \
- ../include/rapidjson/prettywriter.h ../include/rapidjson/writer.h
+ ../include/rapidjson/prettywriter.h ../include/rapidjson/writer.h \
+ ../include/rapidjson/stringbuffer.h \
+ ../include/rapidjson/ostreamwrapper.h
 
 ../include/utils.hpp:
 
@@ -88,3 +90,7 @@ obj/Debug/utils.o: ../src/utils.cpp ../include/utils.hpp \
 ../include/rapidjson/prettywriter.h:
 
 ../include/rapidjson/writer.h:
+
+../include/rapidjson/stringbuffer.h:
+
+../include/rapidjson/ostreamwrapper.h:

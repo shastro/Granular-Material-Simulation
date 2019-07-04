@@ -8,6 +8,8 @@
 #include "rapidjson/filewritestream.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/ostreamwrapper.h"
 namespace rj = rapidjson;
 
 #include <iostream>

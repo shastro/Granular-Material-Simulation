@@ -1,14 +1,15 @@
 {
 	"SIM_FILENAME" : "TEST_1",
-	"FRAMELIMIT" : 100,
-	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 500,
+	"FRAMELIMIT" : 10,
+	"SUB_FRAME_COUNT" : 10,
+	"PARTICLE_COUNT"  : 1000,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
 		"width"  : 1000,
 		"height" : 1000
-	}
+	},
 
+	"MEMORY_FRAME_SAVE_THRESHOLD" : 2
 
 }

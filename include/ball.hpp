@@ -27,7 +27,9 @@ public:
 
 private:
 	bool debug;
-	struct window_t *m_window;		
+	struct window_t *m_window;	
+
+	rj::Document *datadoc;	
 
 public:
 	//Constructor
@@ -52,7 +54,8 @@ public:
 
 	//Ball Physics Calculations
 	void applyForce(sf::Vector2f force, double time_delta);
-	void update(double time_delta);
+	void update(double time_delta, rj::Value *cur_particle);
+	void attachDocument(rj::Document *datadoc);
 
 
 

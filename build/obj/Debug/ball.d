@@ -22,7 +22,8 @@ obj/Debug/ball.o: ../src/ball.cpp ../include/ball.hpp \
  ../include/rapidjson/internal/itoa.h \
  ../include/rapidjson/internal/itoa.h ../include/rapidjson/stringbuffer.h \
  ../include/rapidjson/prettywriter.h ../include/rapidjson/writer.h \
- ../include/utils.hpp
+ ../include/rapidjson/stringbuffer.h \
+ ../include/rapidjson/ostreamwrapper.h ../include/utils.hpp
 
 ../include/ball.hpp:
 
@@ -89,5 +90,9 @@ obj/Debug/ball.o: ../src/ball.cpp ../include/ball.hpp \
 ../include/rapidjson/prettywriter.h:
 
 ../include/rapidjson/writer.h:
+
+../include/rapidjson/stringbuffer.h:
+
+../include/rapidjson/ostreamwrapper.h:
 
 ../include/utils.hpp:

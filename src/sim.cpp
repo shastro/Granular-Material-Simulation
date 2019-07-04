@@ -1,10 +1,11 @@
 #include "sim.hpp"
 
-Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE)
+Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Document *datadoc)
  {
 	//Time and Random number initialization
 	srand(time(NULL));
 
+	this->datadoc = datadoc;
 	this->n = n;
 	this->nSimulationSubSteps = steps;
 	m_COLLISION_MODE = COLLISION_MODE;
@@ -21,9 +22,12 @@ Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, 
 		float vel_y = frandom(-1.3, 1.3);
 
 		float mass = radius * 100;
+
+
 		Ball *ball = new Ball(sf::Vector2f((float)pos_x, (float)pos_y), sf::Vector2f(vel_x, vel_y), radius, mass, window);
 		ball->id = i;
-		auto s = std::to_string(ball->id);
+		ball->attachDocument(datadoc);
+
 		vecBalls.emplace_back(*ball);
 	
 	}
@@ -176,11 +180,20 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 //Handles Updating Object postions, velocities, momenta
 // IE collision response at a macro level
-void Simulation_Engine::calcSteps()
+void Simulation_Engine::calcSteps(rj::Value *cur_sub_frame)
 {
+	rj::Value particles(rj::kArrayType);
+
 	for (int i = 0; i < n; i++) {
-		vecBalls.at(i).update(fSimElapsedTime);
+
+		rj::Value cur_particle(rj::kObjectType);
+		cur_particle.AddMember("particle_id", rj::Value().SetInt(vecBalls.at(i).id), datadoc->GetAllocator());
+
+		vecBalls.at(i).update(fSimElapsedTime, &cur_particle);
+
+		particles.PushBack(cur_particle, datadoc->GetAllocator());
 	}
+	cur_sub_frame->AddMember("particles", particles, datadoc->GetAllocator());
 
 }
 
@@ -215,19 +228,31 @@ void Simulation_Engine::updateTimeData()
 // }
 
 
-void Simulation_Engine::simLoop()
+void Simulation_Engine::simLoop(rj::Value *cur_frame)
 {
 	clock_t start = clock();
 	//MAIN LOGIC//
+
+	// SUB FRAME DATA SETUP //
+	rj::Value sub_frames(rj::kArrayType);
+
 	for (int i = 0; i < nSimulationSubSteps; i++) {
+
+        rj::Value cur_sub_frame(rj::kObjectType);
+        cur_sub_frame.AddMember("sub_frame", rj::Value().SetInt(i), datadoc->GetAllocator());
+
 		detectCollisions();
-		calcSteps();
+		calcSteps(&cur_sub_frame);
+		sub_frames.PushBack(cur_sub_frame, datadoc->GetAllocator());
+
+		//printf("SUBFRAME: %d\n", i);
 	}
+	cur_frame->AddMember("SUBFRAMES", sub_frames, datadoc->GetAllocator());
 	//drawElements();
 
 
 	clock_t end = clock();
-	dt = (double) (end - start) / (CLOCKS_PER_SEC * 0.06);
+	dt = (double) (end - start) / (CLOCKS_PER_SEC * 0.0006); //0.06
 
 	updateTimeData();
 
