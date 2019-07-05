@@ -4,7 +4,9 @@ A simulation environment in C++ and SFML, with the goal of implementing collisio
 ## Dependencies 
 [SFML](https://www.sfml-dev.org/)- This is will need to be installed and can be installed with ```sudo apt-get install libsfml-dev ```
 
-[Rapidjson](http://rapidjson.org/)- This is already included in the Git as it is a header only library.
+[Rapidjson](http://rapidjson.org/)- Header Json Writer and Parsing Library
+
+[Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page)- Header Math Library
 
 ## Current Feature Set
 - Ability to simulate particle collision and interaction using two force contact models (Soft Sphere DEM).

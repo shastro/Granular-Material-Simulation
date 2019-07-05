@@ -15,6 +15,7 @@ inline float dist2f(sf::Vector2f& a, sf::Vector2f& b)
 	return ((b.x - a.x) * (b.x - a.x)) + ((b.y - a.y) * (b.y - a.y));
 }
 
+//In place multiplication of a vector by a constant
 inline sf::Vector2f mult2f(sf::Vector2f& a, float C)
 {
 	a.x *= C;
@@ -23,6 +24,7 @@ inline sf::Vector2f mult2f(sf::Vector2f& a, float C)
 	return a;
 }
 
+// Multiplies a vector by a constant but returns a copy without modifying the original
 inline sf::Vector2f mult2f_cpy(sf::Vector2f a, float C)
 {
 	return sf::Vector2f(a.x * C, a.y *C);

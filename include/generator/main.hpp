@@ -4,11 +4,13 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
-#include "rapidjson.h"
-#include "document.h"
-#include "filewritestream.h"
-#include "writer.h"
-#include "prettywriter.h"
+#include <Eigen/Core>
+
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/document.h>
+#include <rapidjson/filewritestream.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/prettywriter.h>
 
 namespace rj = rapidjson;
 
