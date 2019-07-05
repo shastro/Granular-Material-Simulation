@@ -13,9 +13,9 @@ A simulation environment in C++ and SFML, with the goal of implementing collisio
 ## Planned Feature Set
 - Ability to trim data-sets outputted by the generator and render particles in real time
 - Much more heightened configurability
-- Collission Detection optimization through either quadtree or spatial hashing methods (configurable choice)
+- Collision Detection optimization through either quadtree or spatial hashing methods (configurable choice)
 - Improved physics models, with options for several different contact modes as well as rendering options
 
 ## Dream Feature Set
 (Only to be implemented if my attention is not drawn away to other projects and interests)
-- User Interface and Monitering for Data Generation, Data Analysis, and Simulation Playback
+- User Interface and Monitoring for Data Generation, Data Analysis, and Simulation Playback
