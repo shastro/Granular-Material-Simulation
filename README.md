@@ -7,7 +7,7 @@ A simulation environment in C++ and SFML, with the goal of implementing collisio
 [Rapidjson](http://rapidjson.org/)- This is already included in the Git as it is a header only library.
 
 ## Current Feature Set
-- Ability to simulate particle collission and nteraction using two force contact models (Soft Sphere DEM).
+- Ability to simulate particle collision and interaction using two force contact models (Soft Sphere DEM).
 - Simulation Data storage in json format, particle positions, velocities, and accelerations per sub-frame are all stored.
 - Configurable simulation settings, including ram flush periodicity as well as particle count and window resolution.
 ## Planned Feature Set
