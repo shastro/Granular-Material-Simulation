@@ -1,12 +1,12 @@
 *.o
-./build/*.make
-./build/*.txt
-./build/*.make
-./build/Makefile
-./build/makefile_backup
-./build/memlog
-./build/obj/*
+build/*.make
+build/*.txt
+build/*.make
+build/Makefile
+build/makefile_backup
+build/memlog
+build/obj/*
 
-./bin/*
+bin/*
 
-./sim_data/*
+sim_data/*
