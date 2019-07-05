@@ -1,9 +1,9 @@
 obj/Debug/sim.o: ../src/sim.cpp ../include/sim.hpp ../include/basic.hpp \
- ../include/rapidjson/document.h ../include/rapidjson/reader.h \
- ../include/rapidjson/allocators.h ../include/rapidjson/rapidjson.h \
- ../include/rapidjson/stream.h ../include/rapidjson/encodings.h \
- ../include/rapidjson/encodedstream.h ../include/rapidjson/memorystream.h \
- ../include/rapidjson/internal/meta.h \
+ ../include/rapidjson/rapidjson.h ../include/rapidjson/document.h \
+ ../include/rapidjson/reader.h ../include/rapidjson/allocators.h \
+ ../include/rapidjson/rapidjson.h ../include/rapidjson/stream.h \
+ ../include/rapidjson/encodings.h ../include/rapidjson/encodedstream.h \
+ ../include/rapidjson/memorystream.h ../include/rapidjson/internal/meta.h \
  ../include/rapidjson/internal/../rapidjson.h \
  ../include/rapidjson/internal/stack.h \
  ../include/rapidjson/internal/../allocators.h \
@@ -22,13 +22,13 @@ obj/Debug/sim.o: ../src/sim.cpp ../include/sim.hpp ../include/basic.hpp \
  ../include/rapidjson/internal/itoa.h \
  ../include/rapidjson/internal/itoa.h ../include/rapidjson/stringbuffer.h \
  ../include/rapidjson/prettywriter.h ../include/rapidjson/writer.h \
- ../include/rapidjson/stringbuffer.h \
- ../include/rapidjson/ostreamwrapper.h ../include/utils.hpp \
- ../include/ball.hpp
+ ../include/utils.hpp ../include/ball.hpp
 
 ../include/sim.hpp:
 
 ../include/basic.hpp:
+
+../include/rapidjson/rapidjson.h:
 
 ../include/rapidjson/document.h:
 
@@ -91,10 +91,6 @@ obj/Debug/sim.o: ../src/sim.cpp ../include/sim.hpp ../include/basic.hpp \
 ../include/rapidjson/prettywriter.h:
 
 ../include/rapidjson/writer.h:
-
-../include/rapidjson/stringbuffer.h:
-
-../include/rapidjson/ostreamwrapper.h:
 
 ../include/utils.hpp:
 

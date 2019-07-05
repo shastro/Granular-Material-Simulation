@@ -1,5 +1,12 @@
 *.o
-./build/makefile_backup
-./bin/GranularSimulation
-*.make
+./build/*.make
+./build/*.txt
+./build/*.make
 ./build/Makefile
+./build/makefile_backup
+./build/memlog
+./build/obj/*
+
+./bin/*
+
+./simulation_data/*

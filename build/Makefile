@@ -10,12 +10,14 @@ endif
 
 ifeq ($(config),debug)
   GranularSimulation_config = debug
+  ParticleRenderer_config = debug
 endif
 ifeq ($(config),release)
   GranularSimulation_config = release
+  ParticleRenderer_config = release
 endif
 
-PROJECTS := GranularSimulation
+PROJECTS := GranularSimulation ParticleRenderer
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -27,8 +29,15 @@ ifneq (,$(GranularSimulation_config))
 	@${MAKE} --no-print-directory -C . -f GranularSimulation.make config=$(GranularSimulation_config)
 endif
 
+ParticleRenderer:
+ifneq (,$(ParticleRenderer_config))
+	@echo "==== Building ParticleRenderer ($(ParticleRenderer_config)) ===="
+	@${MAKE} --no-print-directory -C . -f ParticleRenderer.make config=$(ParticleRenderer_config)
+endif
+
 clean:
 	@${MAKE} --no-print-directory -C . -f GranularSimulation.make clean
+	@${MAKE} --no-print-directory -C . -f ParticleRenderer.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -41,5 +50,6 @@ help:
 	@echo "   all (default)"
 	@echo "   clean"
 	@echo "   GranularSimulation"
+	@echo "   ParticleRenderer"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
