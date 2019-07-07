@@ -1,9 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
 
 #include <Eigen/Core>
 

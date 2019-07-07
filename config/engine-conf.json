@@ -1,9 +1,9 @@
 {
-	"SIM_FILENAME" : "test4_true",
+	"SIM_FILENAME" : "BIGTEST5_true",
 	"SIM_FILEPATH" : "../sim_data/test/",
-	"FRAMELIMIT" : 10,
+	"FRAMELIMIT" : 4,
 	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 10,
+	"PARTICLE_COUNT"  : 1000,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {

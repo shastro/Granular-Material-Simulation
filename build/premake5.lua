@@ -12,8 +12,10 @@ project "GranularSimulation"
 
 	files {"../src/engine/*.cpp"}
 
-	configuration "Debug"
-	symbols "On"
+	-- configuration "Debug"
+	-- symbols "On"
+	configration "Release"
+	optimize "On"
 
 	filter "configurations.Debug"
 		defines {"DEBUG"}

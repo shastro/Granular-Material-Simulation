@@ -14,6 +14,7 @@
 #include "ball.hpp"
 #include "utils.hpp"
 #include "sim.hpp"
+#include <ctime>
 
 char* load_file(char const* path)
 {
@@ -42,7 +43,9 @@ char* load_file(char const* path)
 
 int main(int argc, char **argv) {
 
-    
+    clock_t start;
+    start = clock();
+
     const char *config_json;
     const char *config_path = "../config/engine-conf.json";
 
@@ -201,6 +204,10 @@ int main(int argc, char **argv) {
     
     printf("SIMULATION COMPLETE!\n");
 
+    clock_t end;
+    end = clock();
+
+    PRINT((double)(end - start)/ CLOCKS_PER_SEC)
     // clean up :)
     delete Engine;
     dw.Reset(docbuffer);
