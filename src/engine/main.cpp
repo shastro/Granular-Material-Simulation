@@ -1,7 +1,7 @@
 /*
     Granular Simulation
     Author:Skyler Hughes
-    Liscence: MIT
+    Liscense: MIT
     Goals:
 
     - GUI ability to change to fullscreen
@@ -110,9 +110,6 @@ int main(int argc, char **argv) {
         dw.Key("SIM_NAME");
         dw.String(SIM_FILENAME);
 
-
-        
-
     // SIM DATE //
 
         dw.Key("SIM_DATE");
@@ -206,8 +203,8 @@ int main(int argc, char **argv) {
 
     clock_t end;
     end = clock();
-
-    PRINT((double)(end - start)/ CLOCKS_PER_SEC)
+    
+    PRINT("COMPLETION TIME: "<< (double)(end - start)/ CLOCKS_PER_SEC << "seconds")
     // clean up :)
     delete Engine;
     dw.Reset(docbuffer);

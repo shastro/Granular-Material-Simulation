@@ -1,9 +1,9 @@
 {
-	"SIM_FILENAME" : "BIGTEST5_true",
+	"SIM_FILENAME" : "big_true",
 	"SIM_FILEPATH" : "../sim_data/test/",
-	"FRAMELIMIT" : 4,
-	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 1000,
+	"FRAMELIMIT" : 150,
+	"SUB_FRAME_COUNT" : 100,
+	"PARTICLE_COUNT"  : 5000,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
@@ -11,7 +11,7 @@
 		"height" : 1000
 	},
 
-	"MEMORY_FRAME_SAVE_THRESHOLD" : 2,
+	"MEMORY_FRAME_SAVE_THRESHOLD" : 15,
 	"MINIMIZE_DATA" : true
 
 }

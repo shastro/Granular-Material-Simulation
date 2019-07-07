@@ -217,7 +217,7 @@ void Simulation_Engine::calcSteps(int sub_frame)
 			vecBalls.at(i).update(fSimElapsedTime);
 			vecBalls.at(i).writeData();
 			dw->EndObject();
-		}else if (conf->MINIMIZE_DATA == true){
+		}else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)){
 			vecBalls.at(i).update(fSimElapsedTime);
 		 } //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
 		
@@ -252,7 +252,7 @@ void Simulation_Engine::simLoop()
 	dw->StartArray();
 
 	clock_t start, end;
-
+	
 	for (int i = 0; i < nSimulationSubSteps; i++) {
 
 		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
@@ -285,7 +285,7 @@ void Simulation_Engine::simLoop()
 		}
 		
 
-		std::cout << '\r' << "Sub-Frame Completion: " << std::setw(2) << std::setfill('0') << (100 * (float)(i + 1) / (float)nSimulationSubSteps) << "%" << std::flush;
+		std::cout << '\r' << "Sub-Frame Completion: " << std::setw(8)/* << std::setfill('0') */ << (100 * (float)(i + 1) / (float)nSimulationSubSteps) << "%" << std::flush;
 
 	}
 
@@ -294,7 +294,7 @@ void Simulation_Engine::simLoop()
 
 
 	
-	dt = (double) (end - start) / (CLOCKS_PER_SEC * 0.06); //0.06
+	dt = (double) (end - start) / (CLOCKS_PER_SEC ); //0.06
 
 	fSimElapsedTime = dt / (double) nSimulationSubSteps;
 

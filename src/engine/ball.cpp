@@ -29,7 +29,7 @@ void Ball::update(double time_delta)
 	m_p = m_vel * m_mass; //Momenta
 
 	//Speed Clamping at Rest
-	if(m_vel.squaredNorm() < 0.0025){
+	if(m_vel.squaredNorm() < 0.0005){
 		m_vel = m_vel * 0;
 	}
 

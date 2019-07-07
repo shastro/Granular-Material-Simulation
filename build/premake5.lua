@@ -9,13 +9,12 @@ project "GranularSimulation"
 	targetdir "../bin/"
 	includedirs {"../include/engine", "../include/rapidjson", "../include/utils"}
 	links {"sfml-graphics", "sfml-window" , "sfml-system", "m"}
-
+	buildoptions{"-O3"}
 	files {"../src/engine/*.cpp"}
 
 	-- configuration "Debug"
 	-- symbols "On"
-	configration "Release"
-	optimize "On"
+
 
 	filter "configurations.Debug"
 		defines {"DEBUG"}
@@ -23,7 +22,8 @@ project "GranularSimulation"
 
 	filter "configurations.Release"
 		defines {"NDEBUG"}
-		optimize "On"
+		buildoptions{"-O3"}
+		optimize "Speed"
 
 
 	
