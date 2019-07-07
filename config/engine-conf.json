@@ -1,9 +1,9 @@
 {
-	"SIM_FILENAME" : "smalltest3",
+	"SIM_FILENAME" : "test4_true",
 	"SIM_FILEPATH" : "../sim_data/test/",
-	"FRAMELIMIT" : 120,
+	"FRAMELIMIT" : 10,
 	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 1000,
+	"PARTICLE_COUNT"  : 10,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
@@ -11,6 +11,7 @@
 		"height" : 1000
 	},
 
-	"MEMORY_FRAME_SAVE_THRESHOLD" : 15
+	"MEMORY_FRAME_SAVE_THRESHOLD" : 2,
+	"MINIMIZE_DATA" : true
 
 }

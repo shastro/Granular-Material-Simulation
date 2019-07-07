@@ -1,10 +1,11 @@
 #include "sim.hpp"
 
-Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Writer<rj::StringBuffer> *dw)
- {
+Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *conf)
+{
 	//Time and Random number initialization
 	srand(time(NULL));
 
+	this->conf = conf;
 	this->dw = dw;
 	this->n = n;
 	this->nSimulationSubSteps = steps;
@@ -13,21 +14,21 @@ Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, 
 
 	//Create Balls with random initial data.
 	for (int i = 0; i < n; i++) {
-	
+
 		int radius = random(1, 5); //Random between 50 and 150;
 		int pos_x  = random(radius + 2, window->width  - 100 - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
-		int pos_y  = random(radius + 2, window->height - 100- radius  - 2);
-	
+		int pos_y  = random(radius + 2, window->height - 100 - radius  - 2);
+
 		float vel_x = frandom(-1.3, 1.3);
 		float vel_y = frandom(-1.3, 1.3);
 
 		float mass = radius * 100;
 
-		Ball *ball = new Ball(sf::Vector2f((float)pos_x, (float)pos_y), sf::Vector2f(vel_x, vel_y), radius, mass, window, i);
+		Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i);
 		ball->attachWriter(dw);
 
 		vecBalls.emplace_back(*ball);
-	
+
 	}
 	PRINT("ENGINE CREATED")
 }
@@ -35,7 +36,7 @@ Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, 
 //Destructor
 Simulation_Engine::~Simulation_Engine()
 {
-	printf("ENGINE DESTROYED\n");
+	PRINT("ENGINE DESTROYED")
 	// for(auto &ball : vecBalls){
 	// 	delete &ball;
 	// }
@@ -45,7 +46,7 @@ Simulation_Engine::~Simulation_Engine()
 //Checks ball collision between two balls
 bool Simulation_Engine::checkBallIntersect(Ball& ball1, Ball& ball2)
 {
-	if (dist2f(ball1.m_pos, ball2.m_pos) < ((ball1.m_radius + ball2.m_radius) * (ball1.m_radius + ball2.m_radius))) {
+	if ((ball1.m_pos - ball2.m_pos).squaredNorm() < ((ball1.m_radius + ball2.m_radius) * (ball1.m_radius + ball2.m_radius))) {
 
 		//std::cout << "Ballid: " << ball1.id << " " << "Targid: " << ball2.id << std::endl;
 		return true;
@@ -74,108 +75,108 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 {
 
 	//Support for multiple different types of collision response
-	switch(m_COLLISION_MODE){
-		case(HERTZ):
+	switch (m_COLLISION_MODE) {
+	case (HERTZ):
 
-			{//Scope Wrapping
+	{	//Scope Wrapping
 
-			////////////////////
+		////////////////////
 
-			// Normal Vector //
+		// Normal Vector //
 
-			sf::Vector2f normal = ball1.m_pos - ball2.m_pos; //Vector normal to point of contact
-			float dist = mag2f(normal); //Capture the distance
-			mult2f(normal, 1.0f / dist); //Normalize the normal vector
+		Eigen::Vector2f normal = ball1.m_pos - ball2.m_pos; //Vector normal to point of contact
+		float dist = normal.norm(); //Capture the distance
+		normal.normalize(); //Normalize the normal vector
 
-			////////////////////
+		////////////////////
 
-			// Overlap //
+		// Overlap //
 
-			float overlap = dist - (ball1.m_radius - ball2.m_radius);
-			
-			///////////////////
+		float overlap = dist - (ball1.m_radius - ball2.m_radius);
 
-			// Calculate Effective Modulus of Elasticity //
+		///////////////////
 
-			float E_eff = 1.0f / (((1 - ball1.v_p * ball1.v_p) / ball1.E) + ((1 - ball2.v_p * ball2.v_p) / ball1.E)); 
-			float r_eff = 1.0f / ((1/ball1.m_radius) + (1/ball2.m_radius));
+		// Calculate Effective Modulus of Elasticity //
 
-			//////////////////
+		float E_eff = 1.0f / (((1 - ball1.v_p * ball1.v_p) / ball1.E) + ((1 - ball2.v_p * ball2.v_p) / ball1.E));
+		float r_eff = 1.0f / ((1 / ball1.m_radius) + (1 / ball2.m_radius));
 
-			// Hertzian Stiffness //
+		//////////////////
 
-			float k_hz  = (1.33333333) * sqrt(r_eff) * E_eff;
-			float f_mag = k_hz * pow(overlap, 1.5);
-			sf::Vector2f force = mult2f_cpy(normal, f_mag);
+		// Hertzian Stiffness //
 
-			//////////////////
+		float k_hz  = (1.33333333) * sqrt(r_eff) * E_eff;
+		float f_mag = k_hz * pow(overlap, 1.5);
+		Eigen::Vector2f force = normal * f_mag;
 
-			// ApplyForce //
+		//////////////////
 
-			ball1.applyForce(force, fSimElapsedTime);
-			ball2.applyForce(mult2f(force, -1), fSimElapsedTime);
+		// ApplyForce //
 
-
-			}//Scope Wrapping
-
-		break;
-		case(HERTZ_DAMP):
-
-			{//Scope Wrapping
-
-			// Normal Vector //
-
-			sf::Vector2f normal = ball1.m_pos - ball2.m_pos; //Vector normal to point of contact
-			float dist = mag2f(normal); //Capture the distance
-			mult2f(normal, 1.0f / dist); //Normalize the normal vector
-
-			/////////////////////////
-
-			// Overlap //
-			float overlap = dist - (ball1.m_radius - ball2.m_radius);
-			
-			/////////////////////////
-
-			// Calculate Effective Modulus of Elasticity //
-
-			float E_eff = 1.0f / (((1 - ball1.v_p * ball1.v_p) / ball1.E) + ((1 - ball2.v_p * ball2.v_p) / ball1.E)); 
-			float r_eff = 1.0f / ((1/ball1.m_radius) + (1/ball2.m_radius));
-
-			/////////////////////////
-
-			// Damping Calculations //
-
-			 float dmp = 0.2; //Damping Coeff
-			float v_rel = dot2f(ball1.m_vel, normal) + dot2f(ball2.m_vel, normal);
-			sf::Vector2f damp_force = mult2f_cpy(normal, v_rel * dmp);
-			mult2f(ball1.m_vel,  dmp);
-			mult2f(ball2.m_vel,  dmp);
-
-			/////////////////////////
-
-			// Hertzian Stiffness //
-
-			float k_hz  = (1.33333333) * sqrt(r_eff) * E_eff;
-			float f_mag = k_hz * pow(overlap, 1.5); 
-			sf::Vector2f force = mult2f_cpy(normal, f_mag);
-
-			////////////////////////
+		ball1.applyForce(force, fSimElapsedTime);
+		ball2.applyForce((force * -1), fSimElapsedTime);
 
 
-			// Apply forces //
+	}//Scope Wrapping
 
-			ball1.applyForce(force, fSimElapsedTime);
-			ball2.applyForce(mult2f(force, -1), fSimElapsedTime);
+	break;
+	case (HERTZ_DAMP):
+
+	{	//Scope Wrapping
+
+		// Normal Vector //
+
+		Eigen::Vector2f normal = ball1.m_pos - ball2.m_pos; //Vector normal to point of contact
+		float dist = normal.norm(); //Capture the distance
+		normal.normalize(); //Normalize the normal vector
+
+		/////////////////////////
+
+		// Overlap //
+		float overlap = dist - (ball1.m_radius - ball2.m_radius);
+
+		/////////////////////////
+
+		// Calculate Effective Modulus of Elasticity //
+
+		float E_eff = 1.0f / (((1 - ball1.v_p * ball1.v_p) / ball1.E) + ((1 - ball2.v_p * ball2.v_p) / ball1.E));
+		float r_eff = 1.0f / ((1 / ball1.m_radius) + (1 / ball2.m_radius));
+
+		/////////////////////////
+
+		// Damping Calculations //
+
+		float dmp = 0.2; //Damping Coeff
+		float v_rel = ball1.m_vel.dot(normal) + ball2.m_vel.dot(normal);
+		Eigen::Vector2f damp_force = normal * (v_rel * dmp);
+		ball1.m_vel = ball1.m_vel * dmp;
+		ball2.m_vel = ball2.m_vel * dmp;
+
+		/////////////////////////
+
+		// Hertzian Stiffness //
+
+		float k_hz  = (1.33333333) * sqrt(r_eff) * E_eff;
+		float f_mag = k_hz * pow(overlap, 1.5);
+		Eigen::Vector2f force = normal * f_mag;
+
+		////////////////////////
 
 
-			//////////////////////
+		// Apply forces //
 
-			// ball1.applyForce(damp_force, fSimElapsedTime);
-			// ball2.applyForce(mult2f(damp_force, -1), fSimElapsedTime);
+		ball1.applyForce(force, fSimElapsedTime);
+		ball2.applyForce((force * -1), fSimElapsedTime);
 
-			}//Scope
-			
-		break;
+
+		//////////////////////
+
+		// ball1.applyForce(damp_force, fSimElapsedTime);
+		// ball2.applyForce(mult2f(damp_force, -1), fSimElapsedTime);
+
+	}//Scope
+
+	break;
 		// default:
 		// 	LOG("[ERROR] ", "NO COLLISION MODE SELECTED");
 		// 	exit(1);
@@ -187,24 +188,54 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 //Handles Updating Object postions, velocities, momenta
 // IE collision response at a macro level
-void Simulation_Engine::calcSteps()
+void Simulation_Engine::calcSteps(int sub_frame)
 {
-	rj::Value particles(rj::kArrayType);
-	dw->Key("particles");
-	dw->StartArray();
+
+	if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
+		dw->Key("particles");
+		dw->StartArray();
+	}else if (conf->MINIMIZE_DATA == false){
+		dw->Key("particles");
+		dw->StartArray();
+	}else{
+		// Do nothing
+	}
 
 	for (int i = 0; i < n; i++) {
 
-		dw->StartObject();
-		dw->Key("id");
-		dw->Uint(vecBalls.at(i).id);
-
-		vecBalls.at(i).update(fSimElapsedTime);
-
-		dw->EndObject();
+		if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
+			dw->StartObject();
+			dw->Key("id");
+			dw->Uint(vecBalls.at(i).id);
+			vecBalls.at(i).update(fSimElapsedTime);
+			vecBalls.at(i).writeData();
+			dw->EndObject();
+			PRINT("DATA WRITTEN")
+		}else if (conf->MINIMIZE_DATA == false){
+			dw->StartObject();
+			dw->Key("id");
+			dw->Uint(vecBalls.at(i).id);
+			vecBalls.at(i).update(fSimElapsedTime);
+			vecBalls.at(i).writeData();
+			dw->EndObject();
+		}else if (conf->MINIMIZE_DATA == true){
+			PRINT("UPDATED")
+			vecBalls.at(i).update(fSimElapsedTime);
+		 } //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
+		
+		
 	}
 
-	dw->EndArray();
+	if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
+		dw->EndArray();
+
+	}else if (conf->MINIMIZE_DATA == false){
+
+		dw->EndArray();
+	}else {
+		//Do nothing
+	}
+	
 
 }
 
@@ -215,36 +246,61 @@ void Simulation_Engine::updateTimeData()
 
 void Simulation_Engine::simLoop()
 {
-	clock_t start = clock();
+	
 	//MAIN LOGIC//
 
 	// SUB FRAME DATA SETUP //
 	dw->Key("SUBFRAMES");
 	dw->StartArray();
 
+	clock_t start, end;
+
 	for (int i = 0; i < nSimulationSubSteps; i++) {
 
-		dw->StartObject();
+		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
+			PRINT("YEET!")
+			dw->StartObject();
 
-        dw->Key("sub_frame");
-        dw->Uint(i);
+			dw->Key("sub_frame");
+			dw->Uint(0);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
-        // PHYSICS CALCULATIONS //
+		} else if (conf->MINIMIZE_DATA == false){
+			PRINT("YOTE")
+			dw->StartObject();
+
+			dw->Key("sub_frame");
+			dw->Uint(i);
+		} else {
+			PRINT("FUG")
+			//Do nothing
+		}
+		// PHYSICS CALCULATIONS //
+		start = clock();
 		detectCollisions();
-		calcSteps();
+		calcSteps(i);
+		end = clock();
 
-		dw->EndObject();
+		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
 
-		std::cout << '\r' << "Sub-Frame Completion: " << std::setw(2) << std::setfill('0') << (100 * (float)(i + 1)/(float)nSimulationSubSteps) << "%" << std::flush;
+			dw->EndObject();     
+
+		} else if (conf->MINIMIZE_DATA == false){
+
+			dw->EndObject();
+		}
+		
+
+		std::cout << '\r' << "Sub-Frame Completion: " << std::setw(2) << std::setfill('0') << (100 * (float)(i + 1) / (float)nSimulationSubSteps) << "%" << std::flush;
 
 	}
+
 	dw->EndArray();
 
 
 
-	clock_t end = clock();
+	
 	dt = (double) (end - start) / (CLOCKS_PER_SEC * 0.06); //0.06
 
-	updateTimeData();
+	fSimElapsedTime = dt / (double) nSimulationSubSteps;
 
 }

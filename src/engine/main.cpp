@@ -56,9 +56,11 @@ int main(int argc, char **argv) {
 
     // WINDOW DATA PARSING //
 
-    struct window_t *window = (window_t *)malloc(sizeof(struct window_t));
-    window->width  = configdoc["window"]["width"].GetInt();
-    window->height = configdoc["window"]["height"].GetInt();
+    struct window_t window;
+    struct config_data_t config_struct;
+
+    window.width  = configdoc["window"]["width"].GetInt();
+    window.height = configdoc["window"]["height"].GetInt();
 
     // SIMULATION CONFIGURATION PARSING //
 
@@ -82,8 +84,12 @@ int main(int argc, char **argv) {
 
         int MEMORY_FRAME_SAVE_THRESHOLD = configdoc["MEMORY_FRAME_SAVE_THRESHOLD"].GetInt();
 
+        config_struct.MINIMIZE_DATA = configdoc["MINIMIZE_DATA"].GetBool();
+
     // Close Config //
         free((void *)config_json);
+
+
     /////////////////////////////////////////////
     // DATA GENERATION - END OF CONFIG PARSING //
     /////////////////////////////////////////////
@@ -130,18 +136,18 @@ int main(int argc, char **argv) {
 
         // Window Width //
         dw.Key("width");
-        dw.Uint(window->width);
+        dw.Uint(window.width);
 
         // Window Height //
         dw.Key("height");
-        dw.Uint(window->height);
+        dw.Uint(window.height);
 
 
     dw.EndObject();
 
 
     // ENGINE INSTANTIATION //
-   Simulation_Engine *Engine = new Simulation_Engine(SUB_FRAME_COUNT, PARTICLE_COUNT, window, C_MODEL, &dw);
+   Simulation_Engine *Engine = new Simulation_Engine(SUB_FRAME_COUNT, PARTICLE_COUNT, &window, C_MODEL, &dw, &config_struct);
 
    
 
@@ -200,8 +206,6 @@ int main(int argc, char **argv) {
     dw.Reset(docbuffer);
     docbuffer.Clear();
     docbuffer.ShrinkToFit();
-    //free((void *)config_json);
     fclose(dataout);
-    free((void *)window);
     return 0;
 }

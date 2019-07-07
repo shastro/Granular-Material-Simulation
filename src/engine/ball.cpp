@@ -6,10 +6,10 @@
 /////////////
 
 
-void Ball::applyForce(sf::Vector2f force, double time_delta)
+void Ball::applyForce(Eigen::Vector2f force, double time_delta)
 {
 	
-	m_acc = m_acc + mult2f(force, 1 / m_mass);
+	m_acc = m_acc + (force * (1 / m_mass));
 
 }
 
@@ -17,49 +17,68 @@ void Ball::applyForce(sf::Vector2f force, double time_delta)
 void Ball::update(double time_delta)
 {
 
-	applyForce(sf::Vector2f(0.0, 2000), time_delta);
+	applyForce(Eigen::Vector2f(0.0, 2000), time_delta);
 
-	sf::Vector2f m_acc_cpy = m_acc;
-	sf::Vector2f m_vel_cpy = m_vel;
+	Eigen::Vector2f m_acc_cpy = m_acc;
+	Eigen::Vector2f m_vel_cpy = m_vel;
 
-	m_vel = m_vel + mult2f_cpy(m_acc, time_delta);
-	m_pos = m_pos + mult2f_cpy(m_vel, time_delta);
+	m_vel = m_vel + m_acc * time_delta;
+	m_pos = m_pos + m_vel * time_delta;
 	
 	
-	mult2f(m_p, m_mass); //Momenta
+	m_p = m_vel * m_mass; //Momenta
 
 	//Speed Clamping at Rest
-	if(mag2f(m_vel) < 0.0005){
-		mult2f(m_vel, 0);
+	if(m_vel.squaredNorm() < 0.0025){
+		m_vel = m_vel * 0;
 	}
 
 	float c_e = 0.5; //Coefficient of Elasticity (roughly speaking) this only applies to wall collision 
 
 	float b_zone = 100; //Window Edge Buffer
 	//Edge Detection
-	if (m_pos.x + m_radius > m_window->width - b_zone) {
-		m_pos.x = m_window->width - b_zone - m_radius;
-		m_vel.x *= -c_e;
+	if (m_pos[0] + m_radius > m_window->width - b_zone) {
+		m_pos[0] = m_window->width - b_zone - m_radius;
+		m_vel[0] *= -c_e;
 	}
-	if (m_pos.x - m_radius < b_zone) {
-		m_pos.x = m_radius + b_zone;
-		m_vel.x *= -c_e;
-	}
-
-	if (m_pos.y +  m_radius > m_window->height - b_zone) {
-		m_pos.y = m_window->height - b_zone - m_radius;
-		m_vel.y *= -c_e;
+	if (m_pos[0] - m_radius < b_zone) {
+		m_pos[0] = m_radius + b_zone;
+		m_vel[0] *= -c_e;
 	}
 
-	if (m_pos.y - m_radius < b_zone) {
-		m_pos.y = m_radius + b_zone;
-		m_vel.y *= -c_e;
+	if (m_pos[1] +  m_radius > m_window->height - b_zone) {
+		m_pos[1] = m_window->height - b_zone - m_radius;
+		m_vel[1] *= -c_e;
+	}
+
+	if (m_pos[1] - m_radius < b_zone) {
+		m_pos[1] = m_radius + b_zone;
+		m_vel[1] *= -c_e;
 	}
 
 	//Air Drag
 	//applyForce(mult2f_cpy(m_vel, -10), time_delta);
+	
+	//Reset Acceleration to zero
+	m_acc = Eigen::Vector2f(0, 0);
 
-	// Data Writing //
+}
+
+//Spring Force, sums of momentum divided by radii sum squared
+
+//////////////////
+// DATA WRITING //
+//////////////////
+
+void Ball::attachWriter(rj::Writer<rj::StringBuffer> *dw)
+{
+	this->dw = dw;
+}
+
+//Writes Particle Data to writer object, should be called after update()
+void Ball::writeData()
+{
+		// Data Writing //
 	dw->Key("p_data");
 	dw->StartObject();
 	// Position //
@@ -68,17 +87,17 @@ void Ball::update(double time_delta)
 
 		dw->Key("x");
 
-		if(std::isnan(m_pos.x)){
+		if(std::isnan(m_pos[0])){
 			dw->Null();
 		}else{
-			dw->Double(m_pos.x);
+			dw->Double(m_pos[0]);
 		}
 		dw->Key("y");
 
-		if(std::isnan(m_pos.y)){
+		if(std::isnan(m_pos[1])){
 			dw->Null();
 		}else{
-			dw->Double(m_pos.y);
+			dw->Double(m_pos[1]);
 		}
 
 		dw->EndObject();
@@ -88,17 +107,17 @@ void Ball::update(double time_delta)
 
 		dw->Key("x");
 
-		if(std::isnan(m_vel.x)){
+		if(std::isnan(m_vel[0])){
 			dw->Null();
 		}else{
-			dw->Double(m_vel.x);
+			dw->Double(m_vel[0]);
 		}
 		dw->Key("y");
 
-		if(std::isnan(m_vel.y)){
+		if(std::isnan(m_vel[1])){
 			dw->Null();
 		}else{
-			dw->Double(m_vel.y);
+			dw->Double(m_vel[1]);
 		}
 
 		dw->EndObject();
@@ -109,17 +128,17 @@ void Ball::update(double time_delta)
 
 		dw->Key("x");
 
-		if(std::isnan(m_acc.x)){
+		if(std::isnan(m_acc[0])){
 			dw->Null();
 		}else{
-			dw->Double(m_acc.x);
+			dw->Double(m_acc[0]);
 		}
 		dw->Key("y");
 
-		if(std::isnan(m_acc.y)){
+		if(std::isnan(m_acc[1])){
 			dw->Null();
 		}else{
-			dw->Double(m_acc.y);
+			dw->Double(m_acc[1]);
 		}
 
 		dw->EndObject();
@@ -133,7 +152,7 @@ void Ball::update(double time_delta)
 
 		dw->Key("v_mag");
 
-		double vel_mag = (double)mag2f(m_vel);
+		double vel_mag = (double)m_vel.norm();
 		if(std::isnan(vel_mag)){
 			dw->Null();
 		}else{
@@ -141,21 +160,6 @@ void Ball::update(double time_delta)
 		}
 	
 	dw->EndObject();
-
-	//Reset Acceleration to zero after recording
-	m_acc = sf::Vector2f(0, 0);
-
-}
-
-//Spring Force, sums of momentum divided by radii sum squared
-
-//////////////////
-// DATA WRITING //
-//////////////////
-
-void Ball::attachWriter(rj::Writer<rj::StringBuffer> *dw)
-{
-	this->dw = dw;
 }
 
 Ball::~Ball()

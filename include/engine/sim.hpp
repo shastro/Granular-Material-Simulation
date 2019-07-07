@@ -19,6 +19,8 @@ private:
 	int m_COLLISION_MODE;
 
 	rj::Writer<rj::StringBuffer> *dw;
+
+	struct config_data_t *conf;
 public:
 	double dt; //Change in time between frames
 
@@ -28,14 +30,14 @@ private:
 	int n;
 
 public:
-	Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Writer<rj::StringBuffer> *dw);
+	Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *conf);
 	~Simulation_Engine();
 
 	
 	void simLoop();
 
 	void detectCollisions();
-	void calcSteps();
+	void calcSteps(int sub_frame);
 	void updateTimeData();
 
 private:

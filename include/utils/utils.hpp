@@ -5,9 +5,10 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <cmath>
+#include <iostream>
 #include <iomanip>
 
-#define LOG(label, value) std::cout /*'\r' << std::setw(10) << std::setfill('0')*/ << label << value << std::endl;
+#define LOG(label, value) std::cout << label << value << std::endl;
 
 //Returns the square of the distance between two points
 inline float dist2f(sf::Vector2f& a, sf::Vector2f& b)

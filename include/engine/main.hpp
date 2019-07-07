@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+
 #include <Eigen/Core>
 
 #include <rapidjson/rapidjson.h>
@@ -26,12 +27,21 @@ namespace rj = rapidjson;
 #define PRINT(X) std::cout << X << std::endl;
 
 enum COLLISION_MODE{HERTZ, HERTZ_DAMP};
-/*
-Holds basic window information for particle placement initialization
+
+/* Holds basic window information for particle placement initialization
 */
 struct window_t{
 
 	int width;
 	int height;
+};
+
+/* Holds pertinant simulation config data that the Simulation_Engine Class Needs
+*/
+
+struct config_data_t{
+
+	bool MINIMIZE_DATA;
+
 };
 #endif

@@ -7,7 +7,7 @@ project "GranularSimulation"
 	kind "ConsoleApp"
 	language "C++"
 	targetdir "../bin/"
-	includedirs {"../include/generator", "../include/rapidjson", "../include/utils"}
+	includedirs {"../include/engine", "../include/rapidjson", "../include/utils"}
 	links {"sfml-graphics", "sfml-window" , "sfml-system", "m"}
 
 	files {"../src/engine/*.cpp"}

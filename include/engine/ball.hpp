@@ -8,10 +8,10 @@ class Ball
 {
 public:
 	//Kinematic Data
-	sf::Vector2f m_pos; //Position
-	sf::Vector2f m_vel; //Velocity
-	sf::Vector2f m_acc; //Acceleration
-	sf::Vector2f m_p;   //Momentum
+	Eigen::Vector2f m_pos; //Position
+	Eigen::Vector2f m_vel; //Velocity
+	Eigen::Vector2f m_acc; //Acceleration
+	Eigen::Vector2f m_p;   //Momentum
 
 	//Physical Constants for Hertzian Contact
 	float v_p; //Poisson's Ratio (Ratio of transverse to axial strain)
@@ -33,8 +33,8 @@ private:
 
 public:
 	//Constructor
-	Ball(sf::Vector2f pos, sf::Vector2f vel, float radius, float mass, struct window_t *window, unsigned int id_in)
-		:m_pos(pos.x, pos.y), m_vel(vel.x, vel.y), m_acc(0.0f,0.0f), m_mass(mass)
+	Ball(Eigen::Vector2f pos, Eigen::Vector2f vel, float radius, float mass, struct window_t *window, unsigned int id_in)
+		:m_pos(pos[0], pos[1]), m_vel(vel[0], vel[1]), m_acc(0.0f,0.0f), m_mass(mass)
 	{
 		this->id = id_in;
 		
@@ -49,7 +49,7 @@ public:
 		
 		//Momentum
 		m_p = m_vel;
-		mult2f(m_p, mass);
+		m_p = m_p * mass;
 
 
 	}
@@ -58,9 +58,10 @@ public:
 
 
 	//Ball Physics Calculations
-	void applyForce(sf::Vector2f force, double time_delta);
+	void applyForce(Eigen::Vector2f force, double time_delta);
 	void update(double time_delta);
 	void attachWriter(rj::Writer<rj::StringBuffer> *dw);
+	void writeData();
 
 
 
