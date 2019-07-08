@@ -129,6 +129,10 @@ int main(int argc, char **argv) {
         dw.Key("SIN_CONTACT_MODE");
         dw.String(COLLISION_MODE);
 
+    // PARTICLE COUNT //
+        dw.Key("PARTICLE_COUNT");
+        dw.Uint(PARTICLE_COUNT);
+
 
     dw.Key("WINDOW_DATA");
     // Window Data //
@@ -144,6 +148,7 @@ int main(int argc, char **argv) {
 
 
     dw.EndObject();
+
 
 
     // ENGINE INSTANTIATION //
@@ -203,7 +208,7 @@ int main(int argc, char **argv) {
 
     clock_t end;
     end = clock();
-    
+
     PRINT("COMPLETION TIME: "<< (double)(end - start)/ CLOCKS_PER_SEC << "seconds")
     // clean up :)
     delete Engine;

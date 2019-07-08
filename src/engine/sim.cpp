@@ -15,7 +15,7 @@ Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, 
 	//Create Balls with random initial data.
 	for (int i = 0; i < n; i++) {
 
-		int radius = random(1, 5); //Random between 50 and 150;
+		int radius = random(5, 30); //Random between 50 and 150;
 		int pos_x  = random(radius + 2, window->width  - 100 - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
 		int pos_y  = random(radius + 2, window->height - 100 - radius  - 2);
 
@@ -294,8 +294,8 @@ void Simulation_Engine::simLoop()
 
 
 	
-	dt = (double) (end - start) / (CLOCKS_PER_SEC ); //0.06
+	dt = (double) (end - start) / (CLOCKS_PER_SEC); //0.06
 
-	fSimElapsedTime = dt / (double) nSimulationSubSteps;
+	fSimElapsedTime = (dt * 1000) / (double) nSimulationSubSteps;
 
 }

@@ -1,17 +1,22 @@
 {
-	"SIM_FILENAME" : "big_true",
+	"SIM_FILENAME" : "small_true2",
 	"SIM_FILEPATH" : "../sim_data/test/",
-	"FRAMELIMIT" : 150,
-	"SUB_FRAME_COUNT" : 100,
-	"PARTICLE_COUNT"  : 5000,
-	"COLLISION_MODE"  : "HERTZ_DAMP",
+	"FRAMELIMIT" : 1000,
+	"SUB_FRAME_COUNT" : 50,
+	"PARTICLE_COUNT"  : 500,
+	"COLLISION_MODE"  : "HERTZ",
 
 	"window" : {
 		"width"  : 1000,
 		"height" : 1000
 	},
 
-	"MEMORY_FRAME_SAVE_THRESHOLD" : 15,
-	"MINIMIZE_DATA" : true
+	"MEMORY_FRAME_SAVE_THRESHOLD" : 30,
+	"MINIMIZE_DATA" : true,
+
+	"TIME_STEP_COEFFICIENT": 1000,
+
+	"MIN_RADIUS": 5,
+	"MIN_RADIUS": 30
 
 }
