@@ -1,23 +1,24 @@
 #include "sim.hpp"
 
-Simulation_Engine::Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *conf)
+Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *config)
 {
 	//Time and Random number initialization
 	srand(time(NULL));
 
-	this->conf = conf;
+	this->conf = config;
 	this->dw = dw;
-	this->n = n;
-	this->nSimulationSubSteps = steps;
-	m_COLLISION_MODE = COLLISION_MODE;
+
+	nParticles = conf->PARTICLE_COUNT;
+	this->nSimulationSubSteps = conf->SUB_FRAME_COUNT;
+	m_COLLISION_MODE = conf->COLLISION_MODE;
 
 
 	//Create Balls with random initial data.
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < nParticles; i++) {
 
-		int radius = random(5, 30); //Random between 50 and 150;
-		int pos_x  = random(radius + 2, window->width  - 100 - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
-		int pos_y  = random(radius + 2, window->height - 100 - radius  - 2);
+		int radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS); 
+		int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
+		int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
 
 		float vel_x = frandom(-1.3, 1.3);
 		float vel_y = frandom(-1.3, 1.3);
@@ -201,7 +202,7 @@ void Simulation_Engine::calcSteps(int sub_frame)
 		// Do nothing
 	}
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < nParticles; i++) {
 
 		if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
 			dw->StartObject();
@@ -296,6 +297,6 @@ void Simulation_Engine::simLoop()
 	
 	dt = (double) (end - start) / (CLOCKS_PER_SEC); //0.06
 
-	fSimElapsedTime = (dt * 1000) / (double) nSimulationSubSteps;
+	fSimElapsedTime = (dt * conf->TIME_STEP_COEFFICIENT) / (double) nSimulationSubSteps;
 
 }

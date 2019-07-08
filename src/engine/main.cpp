@@ -16,29 +16,6 @@
 #include "sim.hpp"
 #include <ctime>
 
-char* load_file(char const* path)
-{
-    char* buffer = 0;
-    long length;
-    FILE * f = fopen (path, "rb"); //was "rb"
-
-    if (f)
-    {
-        fseek (f, 0, SEEK_END);
-        length = ftell (f);
-        fseek (f, 0, SEEK_SET);
-        buffer = (char*)malloc ((length + 1) * sizeof(char));
-        if (buffer)
-        {
-            fread (buffer, sizeof(char), length, f);
-        }
-        fclose (f);
-    }else{
-        PRINT("[ERROR]: UNABLE TO LOAD CONFIG FILE")
-    }
-    buffer[length] = '\0';
-    return buffer;
-}
 
 
 int main(int argc, char **argv) {
@@ -51,44 +28,53 @@ int main(int argc, char **argv) {
 
     // CONFIG PARSING //
 
-    config_json = load_file(config_path);
+        config_json = load_file(config_path);
 
-    rj::Document configdoc;
-    configdoc.Parse(config_json);
+        rj::Document configdoc;
+        configdoc.Parse(config_json);
 
+    // STRUCT INIT //
+
+        struct window_t window;
+        struct config_data_t config_st;
 
     // WINDOW DATA PARSING //
 
-    struct window_t window;
-    struct config_data_t config_struct;
-
-    window.width  = configdoc["window"]["width"].GetInt();
-    window.height = configdoc["window"]["height"].GetInt();
+        window.width  = configdoc["window"]["width"].GetInt();
+        window.height = configdoc["window"]["height"].GetInt();
+        window.spawnbuffer = configdoc["window"]["spawnbuffer"].GetInt();
 
     // SIMULATION CONFIGURATION PARSING //
 
-        int FRAMELIMIT      = configdoc["FRAMELIMIT"].GetInt();
-        int SUB_FRAME_COUNT = configdoc["SUB_FRAME_COUNT"].GetInt();
-        int PARTICLE_COUNT  = configdoc["PARTICLE_COUNT"].GetInt();
+        config_st.FRAMELIMIT      = configdoc["FRAMELIMIT"].GetInt();
+        config_st.SUB_FRAME_COUNT = configdoc["SUB_FRAME_COUNT"].GetInt();
+        config_st.PARTICLE_COUNT  = configdoc["PARTICLE_COUNT"].GetInt();
 
         const char *SIM_FILENAME   = configdoc["SIM_FILENAME"].GetString();
         const char *SIM_FILEPATH   = configdoc["SIM_FILEPATH"].GetString();
         const char *COLLISION_MODE = configdoc["COLLISION_MODE"].GetString();
 
-        int C_MODEL = HERTZ; //Default Collision Model
-
         if(strcmp(COLLISION_MODE, "HERTZ") == 0){
-            C_MODEL = HERTZ;
+            config_st.COLLISION_MODE = HERTZ;
         }else if(strcmp(COLLISION_MODE, "HERTZ_DAMP") == 0){
-            C_MODEL = HERTZ_DAMP;
+            config_st.COLLISION_MODE = HERTZ_DAMP;
+        }else {
+            LOG("[ERROR]", "INVALID COLLISION_MODE")
+            return 1;
         }
 
     // MEMORY FRAME SAVE THRESHOLD //
 
-        int MEMORY_FRAME_SAVE_THRESHOLD = configdoc["MEMORY_FRAME_SAVE_THRESHOLD"].GetInt();
+        config_st.MEMORY_FRAME_SAVE_THRESHOLD = configdoc["MEMORY_FRAME_SAVE_THRESHOLD"].GetInt();
+        config_st.MINIMIZE_DATA = configdoc["MINIMIZE_DATA"].GetBool();
 
-        config_struct.MINIMIZE_DATA = configdoc["MINIMIZE_DATA"].GetBool();
+    // SPAWNING INFO //
 
+        config_st.MIN_RADIUS = configdoc["MIN_RADIUS"].GetInt();
+        config_st.MAX_RADIUS = configdoc["MAX_RADIUS"].GetInt();
+
+    // TIMING //
+        config_st.TIME_STEP_COEFFICIENT = configdoc["TIME_STEP_COEFFICIENT"].GetInt();
     // Close Config //
         free((void *)config_json);
 
@@ -118,20 +104,20 @@ int main(int argc, char **argv) {
 
     // FRAMELIMIT //
         dw.Key("FRAMELIMIT");
-        dw.Uint(FRAMELIMIT);
+        dw.Uint((uint)config_st.FRAMELIMIT);
 
     // SUB FRAME COUNT //
         dw.Key("SUB_FRAME_COUNT");
-        dw.Uint(SUB_FRAME_COUNT);
+        dw.Uint((uint)config_st.SUB_FRAME_COUNT);
 
     // SIM CONTACT MODE //
 
         dw.Key("SIN_CONTACT_MODE");
-        dw.String(COLLISION_MODE);
+        dw.String(COLLISION_MODE); // Not a member of conf_st since we need the string version
 
     // PARTICLE COUNT //
         dw.Key("PARTICLE_COUNT");
-        dw.Uint(PARTICLE_COUNT);
+        dw.Uint((uint)config_st.PARTICLE_COUNT);
 
 
     dw.Key("WINDOW_DATA");
@@ -146,19 +132,22 @@ int main(int argc, char **argv) {
         dw.Key("height");
         dw.Uint(window.height);
 
+        dw.Key("spawnbuffer");
+        dw.Uint(window.spawnbuffer);
+
 
     dw.EndObject();
 
 
 
     // ENGINE INSTANTIATION //
-   Simulation_Engine *Engine = new Simulation_Engine(SUB_FRAME_COUNT, PARTICLE_COUNT, &window, C_MODEL, &dw, &config_struct);
+   Simulation_Engine *Engine = new Simulation_Engine(&window, &dw, &config_st);
 
    
 
 
 
-    // FILE NAMEING AND CREATION //
+    // FILE NAMING AND CREATION //
     std::string filePath(SIM_FILEPATH);
     std::string fileName(SIM_FILENAME);
     std::string fileExtension(".json");
@@ -170,7 +159,7 @@ int main(int argc, char **argv) {
     dw.StartArray();
 
     // MAIN FRAME LOOP //
-    for(long i = 0; i < FRAMELIMIT; i++){
+    for(long i = 0; i < config_st.FRAMELIMIT; i++){
 
         dw.StartObject();
 
@@ -179,8 +168,8 @@ int main(int argc, char **argv) {
 
         Engine->simLoop();
 
-        if((i % MEMORY_FRAME_SAVE_THRESHOLD) == 0){
-            printf("\nMEMORY DUMP");
+        if((i % config_st.MEMORY_FRAME_SAVE_THRESHOLD) == 0){
+            printf("\n\e[91;50m[MEMORY DUMP]\e[37m");
             fprintf(dataout, "%s", docbuffer.GetString());
             fflush(dataout);
             docbuffer.Flush();

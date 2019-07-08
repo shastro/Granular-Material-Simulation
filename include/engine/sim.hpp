@@ -27,10 +27,10 @@ public:
 private:
 //Simulation Data
 	std::vector<Ball> vecBalls;
-	int n;
+	int nParticles;
 
 public:
-	Simulation_Engine(int steps, int n, struct window_t *window, int COLLISION_MODE, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *conf);
+	Simulation_Engine(struct window_t *window, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *config);
 	~Simulation_Engine();
 
 	

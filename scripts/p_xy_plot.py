@@ -1,10 +1,13 @@
 import json
 import matplotlib.pyplot as plt
 
+filename = input("Enter a filename: ")
+
+filepath = "../sim_data/test/"
 
 print("STARTING")
 print('LOADING FILE')
-json_file = open("../sim_data/test/small_true2.json", "r")
+json_file = open(filepath + filename, "r")
 print('LOADING COMPLETE')
 print('PARSING FILE')
 data = json.load(json_file)

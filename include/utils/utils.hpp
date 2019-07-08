@@ -8,7 +8,9 @@
 #include <iostream>
 #include <iomanip>
 
+//Print Macros
 #define LOG(label, value) std::cout << label << value << std::endl;
+#define PRINT(X) std::cout << X << std::endl;
 
 ///////////////////////////////////
 // LEGACY SF VECTOR HELPER FUNCS //
@@ -45,8 +47,9 @@ inline float dot2f(sf::Vector2f&a, sf::Vector2f&b)
 	return ((a.x * b.x) + (a.y * b.y));
 }
 
-
-
+//////////////////////
+// FUNCTIONS IN USE //
+//////////////////////
 
 inline int random(int a, int b)
 {
@@ -71,4 +74,6 @@ double l_map(double x, double input_start, double input_end, double output_start
 
 // hue: 0-360°; sat: 0.f-1.f; val: 0.f-1.f
 sf::Color hsv(int hue, float sat, float val);
+
+char* load_file(char const* path);
 #endif

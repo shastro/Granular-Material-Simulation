@@ -1,3 +1,5 @@
+/** This file holds some general header definitions as well as some declarations useful only to main.cpp */
+
 #ifndef MAIN_H
 #define MAIN_H
 
@@ -21,7 +23,6 @@ namespace rj = rapidjson;
 
 #include <math.h>
 
-#define PRINT(X) std::cout << X << std::endl;
 
 enum COLLISION_MODE{HERTZ, HERTZ_DAMP};
 
@@ -31,6 +32,7 @@ struct window_t{
 
 	int width;
 	int height;
+	int spawnbuffer;
 };
 
 /* Holds pertinant simulation config data that the Simulation_Engine Class Needs
@@ -38,7 +40,18 @@ struct window_t{
 
 struct config_data_t{
 
+	int FRAMELIMIT;
+	int SUB_FRAME_COUNT;
+	int PARTICLE_COUNT;
+	int COLLISION_MODE;
+
+	int MEMORY_FRAME_SAVE_THRESHOLD;
 	bool MINIMIZE_DATA;
+
+	int TIME_STEP_COEFFICIENT;
+
+	int MIN_RADIUS;
+	int MAX_RADIUS;
 
 };
 #endif

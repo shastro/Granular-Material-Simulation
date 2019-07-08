@@ -67,3 +67,29 @@ unsigned long stringtocharval(const char *string)
   }
   return output;
 }
+
+
+char* load_file(char const* path)
+{
+    char* buffer = 0;
+    long length;
+    FILE * f = fopen (path, "rb"); //was "rb"
+
+    if (f)
+    {
+        fseek (f, 0, SEEK_END);
+        length = ftell (f);
+        fseek (f, 0, SEEK_SET);
+        buffer = (char*)malloc ((length + 1) * sizeof(char));
+        if (buffer)
+        {
+            fread (buffer, sizeof(char), length, f);
+        }
+        fclose (f);
+    }else{
+        PRINT("[ERROR]: UNABLE TO LOAD CONFIG FILE")
+        exit(1);
+    }
+    buffer[length] = '\0';
+    return buffer;
+}
