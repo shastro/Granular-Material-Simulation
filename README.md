@@ -12,8 +12,8 @@ A simulation environment in C++ and SFML, with the goal of implementing collisio
 - Ability to simulate particle collision and interaction using two force contact models (Soft Sphere DEM).
 - Simulation Data storage in json format, particle positions, velocities, and accelerations per sub-frame are all stored.
 - Configurable simulation settings, including ram flush periodicity as well as particle count and window resolution.
-## Planned Feature Set
 - Ability to trim data-sets outputted by the generator and render particles in real time
+## Planned Feature Set
 - Much more heightened configurability
 - Collision Detection optimization through either quadtree or spatial hashing methods (configurable choice)
 - Improved physics models, with options for several different contact modes as well as rendering options
