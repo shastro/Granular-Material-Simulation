@@ -14,28 +14,29 @@ void Ball::applyForce(Eigen::Vector2f force, double time_delta)
 }
 
 //Updates position and velocities of objects, performs no or very little physics calculation, is only responsible for translating acceleration to position
-void Ball::update(double time_delta)
+void Ball::update(double time_delta, int b_zone)
 {
 
-	applyForce(Eigen::Vector2f(0.0, 2000), time_delta);
+	applyForce(Eigen::Vector2f(0.0, 30000000), time_delta); //Gravity 
 
 	Eigen::Vector2f m_acc_cpy = m_acc;
 	Eigen::Vector2f m_vel_cpy = m_vel;
 
-	m_vel = m_vel + m_acc * time_delta;
-	m_pos = m_pos + m_vel * time_delta;
+	//Integration of Newton's Laws
+	m_vel = m_vel + m_acc * 0.000005;
+	m_pos = m_pos + m_vel * 0.000005;
 	
 	
 	m_p = m_vel * m_mass; //Momenta
 
 	//Speed Clamping at Rest
-	if(m_vel.squaredNorm() < 0.0005){
+	if(m_vel.squaredNorm() < 0.00005){
 		m_vel = m_vel * 0;
 	}
 
 	float c_e = 0.5; //Coefficient of Elasticity (roughly speaking) this only applies to wall collision 
 
-	float b_zone = 100; //Window Edge Buffer
+
 	//Edge Detection
 	if (m_pos[0] + m_radius > m_window->width - b_zone) {
 		m_pos[0] = m_window->width - b_zone - m_radius;

@@ -3,17 +3,19 @@ import matplotlib.pyplot as plt
 
 filename = input("Enter a filename: ")
 
-filepath = "../sim_data/test/"
+filepath = "../sim_data/"
 
 print("STARTING")
 print('LOADING FILE')
+
 json_file = open(filepath + filename, "r")
+
 print('LOADING COMPLETE')
 print('PARSING FILE')
 data = json.load(json_file)
 print('PARSING COMPLETE')
 
-plot_style = int(input("Enter 0 to plot all data, enter 1 for manual nav or 2 for sequential nav : "))
+
 
 def plot_particle(pid):
 
@@ -52,28 +54,30 @@ def plot_all():
 	for i in range(0, int(data["PARTICLE_COUNT"])):
 		plot_particle(i)
 
+while (1):
 
+	MODE = int(input("Enter 0 to plot all data, enter 1 for manual nav or 2 for sequential nav : "))
+	
+	if(MODE == 0):
 
-if(plot_style == 0):
-
-	plot_all()
-	plt.show()
-
-
-if(plot_style == 1):
-	while(1):
-		print("Choose a particle id between 0, and " + str(data["PARTICLE_COUNT"]))
-		pid = int(input())
-		plot_particle(pid)
-
+		plot_all()
 		plt.show()
 
 
-if(plot_style == 2):
-	for x in range(data["PARTICLE_COUNT"]):
+	if(MODE == 1):
+		while(1):
+			print("Choose a particle id between 0, and " + str(data["PARTICLE_COUNT"]))
+			pid = int(input())
+			plot_particle(pid)
 
-		plot_particle(x)
-		plt.show()
+			plt.show()
+
+
+	if(MODE == 2):
+		for x in range(data["PARTICLE_COUNT"]):
+
+			plot_particle(x)
+			plt.show()
 
 
 

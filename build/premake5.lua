@@ -10,7 +10,7 @@ project "GranularSimulation"
 	includedirs {"../include/engine", "../include/rapidjson", "../include/utils"}
 	links {"sfml-graphics", "sfml-window" , "sfml-system", "m"}
 	buildoptions{"-O3"}
-	files {"../src/engine/*.cpp"}
+	files {"../src/engine/*.cpp", "../src/utils/*.cpp"}
 
 	-- configuration "Debug"
 	-- symbols "On"
@@ -35,11 +35,9 @@ project "ParticleRenderer"
 	targetdir "../bin/"
 	includedirs {"../include/renderer", "../include/rapidjson", "../include/utils"}
 	links {"sfml-graphics", "sfml-window" , "sfml-system"}
+	buildoptions{"-O3"}
+	files {"../src/renderer/*.cpp", "../src/utils/*.cpp"}
 
-	files {"../src/renderer/*.cpp"}
-
-	configuration "Debug"
-	symbols "On"
 
 	filter "configurations.Debug"
 		defines {"DEBUG"}
@@ -47,5 +45,6 @@ project "ParticleRenderer"
 
 	filter "configurations.Release"
 		defines {"NDEBUG"}
-		optimize "On"
+		buildoptions{"-O3"}
+		optimize "Speed"
 

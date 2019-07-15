@@ -10,7 +10,7 @@
 
 */
 
-#include "main.hpp"
+#include "engine.hpp"
 #include "ball.hpp"
 #include "utils.hpp"
 #include "sim.hpp"
@@ -139,24 +139,24 @@ int main(int argc, char **argv) {
     dw.EndObject();
 
 
-
-    // ENGINE INSTANTIATION //
-   Simulation_Engine *Engine = new Simulation_Engine(&window, &dw, &config_st);
-
-   
-
-
-
     // FILE NAMING AND CREATION //
+    
     std::string filePath(SIM_FILEPATH);
     std::string fileName(SIM_FILENAME);
     std::string fileExtension(".json");
     std::string filePathName = filePath + fileName + fileExtension;
     FILE *dataout = fopen(filePathName.c_str(), "w");
 
+    PRINT("\e[93m[STARTING SIM]\e[37m: " << "\e[92m" << fileName << "\e[37m")
+
+    // ENGINE INSTANTIATION //
+   Simulation_Engine *Engine = new Simulation_Engine(&window, &dw, &config_st);
+
+
     // Frame Data SetUp //
     dw.Key("FRAME_DATA");
     dw.StartArray();
+
 
     // MAIN FRAME LOOP //
     for(long i = 0; i < config_st.FRAMELIMIT; i++){
@@ -192,8 +192,7 @@ int main(int argc, char **argv) {
     fprintf(dataout, "%s", docbuffer.GetString());
     fflush(dataout);
 
-    
-    printf("SIMULATION COMPLETE!\n");
+    PRINT("\e[92m[SIMULATION COMPLETE]: \e[37m"  << "\e[92m" << fileName << "\e[37m");
 
     clock_t end;
     end = clock();

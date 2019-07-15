@@ -1,7 +1,7 @@
-/** This file holds some general header definitions as well as some declarations useful only to main.cpp */
+/** This file holds some general header definitions as well as some declarations useful only to engine.cpp */
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef ENGINE_H
+#define ENGINE_H
 
 
 #include <Eigen/Core>

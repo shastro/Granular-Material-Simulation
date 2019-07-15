@@ -1,24 +1,24 @@
 {
-	"SIM_FILENAME" : "new",
-	"SIM_FILEPATH" : "../sim_data/test/",
-	"FRAMELIMIT" : 1000,
-	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 500,
-	"COLLISION_MODE"  : "HERTZ",
+	"SIM_FILENAME" : "big_damp2",
+	"SIM_FILEPATH" : "../sim_data/",
+	"FRAMELIMIT" : 2000,
+	"SUB_FRAME_COUNT" : 60,
+	"PARTICLE_COUNT"  : 2000,
+	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
 		"width"  : 1000,
 		"height" : 1000,
-		"spawnbuffer" : 100
+		"spawnbuffer" : 0
 
 	},
 
-	"MEMORY_FRAME_SAVE_THRESHOLD" : 30,
+	"MEMORY_FRAME_SAVE_THRESHOLD" : 750,
 	"MINIMIZE_DATA" : true,
 
-	"TIME_STEP_COEFFICIENT": 1000,
+	"TIME_STEP_COEFFICIENT": 150,
 
 	"MIN_RADIUS": 5,
-	"MAX_RADIUS": 30
+	"MAX_RADIUS": 10
 
 }

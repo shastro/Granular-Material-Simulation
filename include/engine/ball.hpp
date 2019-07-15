@@ -1,7 +1,7 @@
 #ifndef BALL_H
 #define BALL_H
 
-#include "main.hpp"
+#include "engine.hpp"
 #include "utils.hpp"
 
 class Ball
@@ -39,8 +39,8 @@ public:
 		this->id = id_in;
 		
 		//Constant Initialization
-		v_p = 0.5;
-		E = 30;
+		v_p = 0.23;
+		E = 1000;
 		debug = false;
 		
 		//Member Assignment
@@ -59,7 +59,7 @@ public:
 
 	//Ball Physics Calculations
 	void applyForce(Eigen::Vector2f force, double time_delta);
-	void update(double time_delta);
+	void update(double time_delta, int b_zone);
 	void attachWriter(rj::Writer<rj::StringBuffer> *dw);
 	void writeData();
 

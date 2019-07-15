@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 //Print Macros
 #define LOG(label, value) std::cout << label << value << std::endl;

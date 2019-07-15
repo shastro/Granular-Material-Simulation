@@ -4,7 +4,7 @@
 #include <ctime>
 #include <cstdlib>
 
-#include "main.hpp"
+#include "engine.hpp"
 #include "utils.hpp"
 #include "ball.hpp"
 
@@ -20,6 +20,7 @@ private:
 
 	rj::Writer<rj::StringBuffer> *dw;
 
+	struct window_t *window;
 	struct config_data_t *conf;
 public:
 	double dt; //Change in time between frames

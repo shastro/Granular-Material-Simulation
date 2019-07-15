@@ -5,6 +5,7 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 	//Time and Random number initialization
 	srand(time(NULL));
 
+	this->window = window;
 	this->conf = config;
 	this->dw = dw;
 
@@ -16,14 +17,20 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 	//Create Balls with random initial data.
 	for (int i = 0; i < nParticles; i++) {
 
-		int radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS); 
+		int radius;
+		if(conf->MIN_RADIUS != conf->MAX_RADIUS){
+			radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS); 
+		}else{
+			radius = conf->MIN_RADIUS;
+		}
+		
 		int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
 		int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
 
 		float vel_x = frandom(-1.3, 1.3);
 		float vel_y = frandom(-1.3, 1.3);
 
-		float mass = radius * 100;
+		float mass = radius * radius * 3.14159 * 0.5;
 
 		Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i);
 		ball->attachWriter(dw);
@@ -94,6 +101,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 		// Overlap //
 
 		float overlap = dist - (ball1.m_radius - ball2.m_radius);
+		overlap = overlap * overlap * overlap;
 
 		///////////////////
 
@@ -110,6 +118,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 		float f_mag = k_hz * pow(overlap, 1.5);
 		Eigen::Vector2f force = normal * f_mag;
 
+		force = force;
 		//////////////////
 
 		// ApplyForce //
@@ -135,6 +144,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 		// Overlap //
 		float overlap = dist - (ball1.m_radius - ball2.m_radius);
+		overlap = overlap * overlap * overlap;
 
 		/////////////////////////
 
@@ -208,18 +218,18 @@ void Simulation_Engine::calcSteps(int sub_frame)
 			dw->StartObject();
 			dw->Key("id");
 			dw->Uint(vecBalls.at(i).id);
-			vecBalls.at(i).update(fSimElapsedTime);
+			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
 			vecBalls.at(i).writeData();
 			dw->EndObject();
 		}else if (conf->MINIMIZE_DATA == false){
 			dw->StartObject();
 			dw->Key("id");
 			dw->Uint(vecBalls.at(i).id);
-			vecBalls.at(i).update(fSimElapsedTime);
+			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
 			vecBalls.at(i).writeData();
 			dw->EndObject();
 		}else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)){
-			vecBalls.at(i).update(fSimElapsedTime);
+			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
 		 } //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
 		
 		
