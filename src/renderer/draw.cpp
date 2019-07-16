@@ -24,13 +24,25 @@ int main(int argc, char**argv) {
     }else{
         filename = std::string(argv[1]);
     }
-
-
-    std::string data_path = "../sim_data/";
-
+    
     // CONFIG PARSING //
 
-    const char *data_json = load_file((data_path + filename).c_str());
+    char *sdata_json = load_file("../config/render-conf.json");
+
+        rj::Document configdoc;
+        PRINT("PARSING CONFIG")
+        configdoc.Parse(sdata_json);
+        int FRAMERATE     = configdoc["FRAMERATE"].GetInt();
+        bool DRAW_TEXT    = configdoc["DRAW_TEXT"].GetBool();
+        const char *data_path   = configdoc["DATA_PATH"].GetString();
+
+        PRINT("PARSING COMPLETE")
+
+    free((void *)sdata_json);
+
+    // DATA PARSING //
+    std::string dp(data_path);
+    const char *data_json = load_file((dp + filename).c_str());
 
     rj::Document data;
     PRINT("PARSING DATA")
@@ -101,37 +113,39 @@ int main(int argc, char**argv) {
     }
 
     // Setting Up Text //
+    sf::Text t_frameCount;
+    sf::Text t_simname;
 
     sf::Font font;
     if(!font.loadFromFile("../assets/font.ttc")){
         PRINT("\e[91;50m[ERROR]: Font not found!\e[37m")
     }
 
-    // Framecount
-    sf::Text t_frameCount;
-    t_frameCount.setFont(font);
-    t_frameCount.setPosition(sf::Vector2f(0.0, 30));
-    t_frameCount.setColor(sf::Color::Red);
-    t_frameCount.setCharacterSize(24);
-    
-    // Sim Name
-    sf::Text t_simname;
-    t_simname.setFont(font);
-    std::string sim("sim: ");
-    t_simname.setString((sim + filename).c_str());
-    t_simname.setColor(sf::Color::Blue);
-    t_simname.setCharacterSize(24);
+    if(DRAW_TEXT){
+        // Framecount 
+        t_frameCount.setFont(font);
+        t_frameCount.setPosition(sf::Vector2f(0.0, 30));
+        t_frameCount.setColor(sf::Color::Red);
+        t_frameCount.setCharacterSize(24);
+        
+        // Sim Name
+        t_simname.setFont(font);
+        std::string sim("sim: ");
+        t_simname.setString((sim + filename).c_str());
+        t_simname.setColor(sf::Color::Blue);
+        t_simname.setCharacterSize(24);
+
+    }
+
    PRINT("\e[32mINITIALIZATION COMPLETE\e[37m")
 
 
     // MAIN FRAMELOOP //
 
     PRINT("BEGINING MAIN LOOP")
-    int FRAMERATE = 60;
     for (int i = 0; i < data["FRAMELIMIT"].GetInt(); i++)
     {
-        // EVENT POLLING //
-        sf::Event event;
+  
 
         clock_t start, end;
         start = clock();
@@ -140,17 +154,21 @@ int main(int argc, char**argv) {
         for (auto & particle : particles) {
             particle->draw();
         }
+
         updateParticles(i, particles, data);
 
+        if(DRAW_TEXT){
+            std::string s("frame: ");
+            s =  s + std::to_string(i);
+            t_frameCount.setString(s.c_str());
 
-        std::string s("frame: ");
-        s =  s + std::to_string(i);
-        t_frameCount.setString(s.c_str());
+            window.draw(t_simname);
 
-        window.draw(t_simname);
-        window.draw(t_frameCount);
+            
+            
+            window.draw(t_frameCount);
 
-
+        }
         window.display();
         end = clock();
 
@@ -172,7 +190,8 @@ int main(int argc, char**argv) {
        LOG("FRAME: ", i)
 
         
-
+        // EVENT POLLING //
+        sf::Event event;
         window.pollEvent(event);
         
         if (event.type == sf::Event::Closed) {

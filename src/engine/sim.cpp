@@ -157,7 +157,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 		// Damping Calculations //
 
-		float dmp = 0.2; //Damping Coeff
+		float dmp = 0.9999; //Damping Coeff
 		float v_rel = ball1.m_vel.dot(normal) + ball2.m_vel.dot(normal);
 		Eigen::Vector2f damp_force = normal * (v_rel * dmp);
 		ball1.m_vel = ball1.m_vel * dmp;

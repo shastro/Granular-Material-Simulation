@@ -1,10 +1,10 @@
 {
-	"SIM_FILENAME" : "tvar",
+	"SIM_FILENAME" : "tvar_dmp",
 	"SIM_FILEPATH" : "../sim_data/",
 	"FRAMELIMIT" : 3000,
 	"SUB_FRAME_COUNT" : 60,
-	"PARTICLE_COUNT"  : 150,
-	"COLLISION_MODE"  : "HERTZ",
+	"PARTICLE_COUNT"  : 500,
+	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
 		"width"  : 1000,
@@ -18,7 +18,7 @@
 
 	"TIME_STEP_COEFFICIENT": 150,
 
-	"MIN_RADIUS": 5,
-	"MAX_RADIUS": 30
+	"MIN_RADIUS": 15,
+	"MAX_RADIUS": 25
 
 }
