@@ -1,3 +1,4 @@
+![screenshot](https://i.ibb.co/Dk3Qh92/screengrab.png)
 # Granular-Material-Simulation
 A simulation environment in C++ and SFML, with the goal of implementing collision detection optimization through quadtrees and spatial hashing, as well as accurate dynamics
 
