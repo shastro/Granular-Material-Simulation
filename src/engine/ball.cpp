@@ -17,7 +17,8 @@ void Ball::applyForce(Eigen::Vector2f force, double time_delta)
 void Ball::update(double time_delta, int b_zone)
 {
 
-	applyForce(Eigen::Vector2f(0.0, 30000000), time_delta); //Gravity 
+	//applyForce(Eigen::Vector2f(0.0, 30000000), time_delta); //Gravity 
+	m_acc = m_acc + Eigen::Vector2f(0.0, 2000000);
 
 	Eigen::Vector2f m_acc_cpy = m_acc;
 	Eigen::Vector2f m_vel_cpy = m_vel;

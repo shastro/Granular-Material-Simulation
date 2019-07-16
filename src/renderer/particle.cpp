@@ -10,9 +10,10 @@ void Particle::draw()
     //     m_color = sf::Color::Red;
     // }else{
         double hue_val;
-        int max = 15000;
+        int min = 0;
+        int max = 25000;
         if(m_v_mag < max){
-            hue_val = l_map(m_v_mag, 0.0, max, 235, 0);
+            hue_val = l_map(m_v_mag, min, max, 235, 0);
 
         }else{
             hue_val = 0;
@@ -27,6 +28,8 @@ void Particle::draw()
     m_shape.setRadius(m_radius);
     m_shape.setFillColor(m_color);
     m_shape.setPosition(m_pos);
+    m_shape.setOutlineColor(sf::Color::Black);
+    m_shape.setOutlineThickness(2);
     // LOG("x: ", m_pos.x)
     // LOG("y: ", m_pos.y)
     // LOG("r: ", m_radius)

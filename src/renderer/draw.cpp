@@ -100,7 +100,28 @@ int main(int argc, char**argv) {
         particles.emplace_back(p);
     }
 
-    PRINT("\e[32mINITIALIZATION COMPLETE\e[37m")
+    // Setting Up Text //
+
+    sf::Font font;
+    if(!font.loadFromFile("../assets/font.ttc")){
+        PRINT("\e[91;50m[ERROR]: Font not found!\e[37m")
+    }
+
+    // Framecount
+    sf::Text t_frameCount;
+    t_frameCount.setFont(font);
+    t_frameCount.setPosition(sf::Vector2f(0.0, 30));
+    t_frameCount.setColor(sf::Color::Red);
+    t_frameCount.setCharacterSize(24);
+    
+    // Sim Name
+    sf::Text t_simname;
+    t_simname.setFont(font);
+    std::string sim("sim: ");
+    t_simname.setString((sim + filename).c_str());
+    t_simname.setColor(sf::Color::Blue);
+    t_simname.setCharacterSize(24);
+   PRINT("\e[32mINITIALIZATION COMPLETE\e[37m")
 
 
     // MAIN FRAMELOOP //
@@ -114,17 +135,31 @@ int main(int argc, char**argv) {
 
         clock_t start, end;
         start = clock();
-        window.clear(/*sf::Color(250,250,250)*/);
+        window.clear(sf::Color(250,250,250));
 
         for (auto & particle : particles) {
             particle->draw();
         }
         updateParticles(i, particles, data);
+
+
+        std::string s("frame: ");
+        s =  s + std::to_string(i);
+        t_frameCount.setString(s.c_str());
+
+        window.draw(t_simname);
+        window.draw(t_frameCount);
+
+
         window.display();
         end = clock();
+
+        // DRAWING TEXT //
+
+
         double time = ((double)(end - start) / (double)CLOCKS_PER_SEC) * 1000000;
         double refresh_rate = ((double)1     / (double)FRAMERATE)      * 1000000;
-
+        // FRAMERATE MANAGEMENT //
         double remainder;
         if (refresh_rate - time > 0) {
 
@@ -134,7 +169,7 @@ int main(int argc, char**argv) {
         }
         usleep(remainder);
 
-        LOG("FRAME: ", i)
+       LOG("FRAME: ", i)
 
         
 

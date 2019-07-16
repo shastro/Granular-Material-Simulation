@@ -1,10 +1,10 @@
 {
-	"SIM_FILENAME" : "big_damp2",
+	"SIM_FILENAME" : "tvar",
 	"SIM_FILEPATH" : "../sim_data/",
-	"FRAMELIMIT" : 2000,
+	"FRAMELIMIT" : 3000,
 	"SUB_FRAME_COUNT" : 60,
-	"PARTICLE_COUNT"  : 2000,
-	"COLLISION_MODE"  : "HERTZ_DAMP",
+	"PARTICLE_COUNT"  : 150,
+	"COLLISION_MODE"  : "HERTZ",
 
 	"window" : {
 		"width"  : 1000,
@@ -19,6 +19,6 @@
 	"TIME_STEP_COEFFICIENT": 150,
 
 	"MIN_RADIUS": 5,
-	"MAX_RADIUS": 10
+	"MAX_RADIUS": 30
 
 }
