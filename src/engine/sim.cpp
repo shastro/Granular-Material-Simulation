@@ -266,7 +266,7 @@ void Simulation_Engine::simLoop()
 	dw->StartArray();
 	
 	fSimElapsedTime = (double)conf->TIME_STEP_COEFFICIENT / (double) nSimulationSubSteps;
-	PRINT(fSimElapsedTime)
+
 	for (int i = 0; i < nSimulationSubSteps; i++) {
 
 		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {

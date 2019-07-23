@@ -185,7 +185,9 @@ int main(int argc, char **argv) {
         
         dw.EndObject();
 
-        printf("\nFRAME: %ld COMPLETE\n", i);
+        printf("\nFRAME: %ld COMPLETE: ", i);
+        float percentage = 100 * (float) (i + 1) / (float) config_st.FRAMELIMIT;
+        PRINT("\e[92m" << std::setw(9) << percentage << "%" << "\e[37m")
     }
 
     dw.EndArray();

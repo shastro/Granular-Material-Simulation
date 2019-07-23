@@ -1,15 +1,15 @@
 {
-	"SIM_FILENAME" : "uwu2",
+	"SIM_FILENAME" : "test222",
 	"SIM_FILEPATH" : "../sim_data/",
-	"FRAMELIMIT" : 1500,
+	"FRAMELIMIT" : 1100,
 	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 750,
+	"PARTICLE_COUNT"  : 4000,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
 		"width"  : 1000,
 		"height" : 1000,
-		"spawnbuffer" : 0
+		"spawnbuffer" : 10
 
 	},
 
@@ -18,9 +18,9 @@
 
 	"TIME_STEP_COEFFICIENT": 0.00005,
 
-	"MIN_RADIUS": 20,
-	"MAX_RADIUS": 25,
-	"SPAWN_VEL": 0,
+	"MIN_RADIUS": 3,
+	"MAX_RADIUS": 6,
+	"SPAWN_VEL": 0.2,
 
 	"P_RATIO" : 0.0001,
 	"YOUNGS_MODULUS" : 29000000000

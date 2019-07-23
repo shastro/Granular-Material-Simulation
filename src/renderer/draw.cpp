@@ -56,8 +56,10 @@ int main(int argc, char**argv) {
     int FRAMECOUNT = data["FRAMELIMIT"].GetInt();
 
     // WINDOW SETUP //
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 4;
     sf::RenderWindow window(sf::VideoMode(data["WINDOW_DATA"]["width"].GetInt(), data["WINDOW_DATA"]["height"].GetInt()),
-                            (std::string("Rendering Sim: ") + filename).c_str());
+                            (std::string("Rendering Sim: ") + filename).c_str(), sf::Style::Default, settings);
 
     std::vector<Particle*> particles;
 
@@ -140,7 +142,8 @@ int main(int argc, char**argv) {
 
    PRINT("\e[32mINITIALIZATION COMPLETE\e[37m")
 
-
+    // WINDOW BORDER //
+   //sf::RectangleShape border(width)
     // MAIN FRAMELOOP //
 
     PRINT("BEGINING MAIN LOOP")
@@ -216,6 +219,11 @@ int main(int argc, char**argv) {
         
         
     }
+
+    for (auto & particle : particles) {
+        free(particle);
+    }
+
 
     return 0;
 
