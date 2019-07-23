@@ -11,7 +11,7 @@ void Particle::draw()
     // }else{
         double hue_val;
         int min = 0;
-        int max = 25000;
+        int max = 800000;
         if(m_v_mag < max){
             hue_val = l_map(m_v_mag, min, max, 235, 0);
 

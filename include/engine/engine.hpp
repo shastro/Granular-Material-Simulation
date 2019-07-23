@@ -48,7 +48,7 @@ struct config_data_t{
 	int MEMORY_FRAME_SAVE_THRESHOLD;
 	bool MINIMIZE_DATA;
 
-	int TIME_STEP_COEFFICIENT;
+	double TIME_STEP_COEFFICIENT;
 
 	int MIN_RADIUS;
 	int MAX_RADIUS;

@@ -17,15 +17,18 @@ void Ball::applyForce(Eigen::Vector2f force, double time_delta)
 void Ball::update(double time_delta, int b_zone)
 {
 
+	
 	//applyForce(Eigen::Vector2f(0.0, 30000000), time_delta); //Gravity 
-	m_acc = m_acc + Eigen::Vector2f(0.0, 2000000);
+	//m_acc = m_acc + Eigen::Vector2f(0.0, 800000000);
 
 	Eigen::Vector2f m_acc_cpy = m_acc;
 	Eigen::Vector2f m_vel_cpy = m_vel;
 
 	//Integration of Newton's Laws
-	m_vel = m_vel + m_acc * 0.000005;
-	m_pos = m_pos + m_vel * 0.000005;
+
+	m_vel = m_vel + m_acc * time_delta;
+	m_vel[1] = m_vel[1] + 50;
+	m_pos = m_pos + m_vel * time_delta;
 	
 	
 	m_p = m_vel * m_mass; //Momenta

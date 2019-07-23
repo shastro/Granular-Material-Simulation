@@ -39,7 +39,6 @@ public:
 
 	void detectCollisions();
 	void calcSteps(int sub_frame);
-	void updateTimeData();
 
 private:
 	void applyBallResponse(Ball& ball, Ball& ball2);

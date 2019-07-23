@@ -27,10 +27,10 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 		int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
 		int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
 
-		float vel_x = frandom(-1.3, 1.3);
-		float vel_y = frandom(-1.3, 1.3);
+		float vel_x = frandom(-0.5, 0.5);
+		float vel_y = frandom(-0.5, 0.5);
 
-		float mass = radius * radius * 3.14159 * 0.5;
+		float mass = radius * radius * 3.14159 * 0.25;
 
 		Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i);
 		ball->attachWriter(dw);
@@ -101,7 +101,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 		// Overlap //
 
 		float overlap = dist - (ball1.m_radius - ball2.m_radius);
-		overlap = overlap * overlap * overlap;
+		//overlap = overlap * overlap * overlap;
 
 		///////////////////
 
@@ -144,7 +144,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 		// Overlap //
 		float overlap = dist - (ball1.m_radius - ball2.m_radius);
-		overlap = overlap * overlap * overlap;
+		//overlap = overlap * overlap * overlap;
 
 		/////////////////////////
 
@@ -218,18 +218,25 @@ void Simulation_Engine::calcSteps(int sub_frame)
 			dw->StartObject();
 			dw->Key("id");
 			dw->Uint(vecBalls.at(i).id);
+			// PHYSICS //
 			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
 			vecBalls.at(i).writeData();
+			////////////
 			dw->EndObject();
 		}else if (conf->MINIMIZE_DATA == false){
 			dw->StartObject();
 			dw->Key("id");
 			dw->Uint(vecBalls.at(i).id);
+
+			/////////
 			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
 			vecBalls.at(i).writeData();
+			/////////
 			dw->EndObject();
 		}else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)){
+			///////
 			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
+			///////
 		 } //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
 		
 		
@@ -248,11 +255,6 @@ void Simulation_Engine::calcSteps(int sub_frame)
 
 }
 
-void Simulation_Engine::updateTimeData()
-{
-	fSimElapsedTime = dt / (double) nSimulationSubSteps;
-}
-
 void Simulation_Engine::simLoop()
 {
 	
@@ -261,9 +263,9 @@ void Simulation_Engine::simLoop()
 	// SUB FRAME DATA SETUP //
 	dw->Key("SUBFRAMES");
 	dw->StartArray();
-
-	clock_t start, end;
 	
+	fSimElapsedTime = (double)conf->TIME_STEP_COEFFICIENT / (double) nSimulationSubSteps;
+	PRINT(fSimElapsedTime)
 	for (int i = 0; i < nSimulationSubSteps; i++) {
 
 		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
@@ -281,10 +283,9 @@ void Simulation_Engine::simLoop()
 			//Do nothing
 		}
 		// PHYSICS CALCULATIONS //
-		start = clock();
 		detectCollisions();
 		calcSteps(i);
-		end = clock();
+
 
 		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
 
@@ -304,9 +305,5 @@ void Simulation_Engine::simLoop()
 
 
 
-	
-	dt = (double) (end - start) / (CLOCKS_PER_SEC); //0.06
-
-	fSimElapsedTime = (dt * conf->TIME_STEP_COEFFICIENT) / (double) nSimulationSubSteps;
 
 }

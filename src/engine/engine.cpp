@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
         config_st.MAX_RADIUS = configdoc["MAX_RADIUS"].GetInt();
 
     // TIMING //
-        config_st.TIME_STEP_COEFFICIENT = configdoc["TIME_STEP_COEFFICIENT"].GetInt();
+        config_st.TIME_STEP_COEFFICIENT = configdoc["TIME_STEP_COEFFICIENT"].GetDouble();
     // Close Config //
         free((void *)config_json);
 

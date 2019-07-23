@@ -39,8 +39,8 @@ public:
 		this->id = id_in;
 		
 		//Constant Initialization
-		v_p = 0.23;
-		E = 1000;
+		v_p = 0.001;
+		E = 1000000000;
 		debug = false;
 		
 		//Member Assignment
