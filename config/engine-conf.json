@@ -2,8 +2,8 @@
 	"SIM_FILENAME" : "uwu2",
 	"SIM_FILEPATH" : "../sim_data/",
 	"FRAMELIMIT" : 1500,
-	"SUB_FRAME_COUNT" : 75,
-	"PARTICLE_COUNT"  : 250,
+	"SUB_FRAME_COUNT" : 50,
+	"PARTICLE_COUNT"  : 750,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {

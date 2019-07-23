@@ -34,6 +34,7 @@ int main(int argc, char**argv) {
         configdoc.Parse(sdata_json);
         int FRAMERATE     = configdoc["FRAMERATE"].GetInt();
         bool DRAW_TEXT    = configdoc["DRAW_TEXT"].GetBool();
+        bool DRAW_OUTLINE = configdoc["DRAW_OUTLINE"].GetBool();
         const char *data_path   = configdoc["DATA_PATH"].GetString();
 
         PRINT("PARSING COMPLETE")
@@ -152,7 +153,7 @@ int main(int argc, char**argv) {
         window.clear(sf::Color(250,250,250));
 
         for (auto & particle : particles) {
-            particle->draw();
+            particle->draw(DRAW_OUTLINE);
         }
 
         updateParticles(i, particles, data);

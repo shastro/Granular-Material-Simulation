@@ -1,7 +1,7 @@
 #include "particle.hpp"
 
 
-void Particle::draw()
+void Particle::draw(bool DRAW_OUTLINE)
 {
 
     sf::CircleShape center_disp;
@@ -28,8 +28,11 @@ void Particle::draw()
     m_shape.setRadius(m_radius);
     m_shape.setFillColor(m_color);
     m_shape.setPosition(m_pos);
-    m_shape.setOutlineColor(sf::Color::Black);
-    m_shape.setOutlineThickness(2);
+    
+    if(DRAW_OUTLINE){
+        m_shape.setOutlineColor(sf::Color::Black);
+        m_shape.setOutlineThickness(2);
+    }
     // LOG("x: ", m_pos.x)
     // LOG("y: ", m_pos.y)
     // LOG("r: ", m_radius)

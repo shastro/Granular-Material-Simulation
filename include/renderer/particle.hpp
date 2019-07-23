@@ -37,7 +37,7 @@ public:
    
 public: 
     void updateData(struct p_data_t& p_data);
-    void draw();
+    void draw(bool DRAW_OUTLINE);
 
 };
 
