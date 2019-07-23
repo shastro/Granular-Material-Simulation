@@ -72,9 +72,14 @@ int main(int argc, char **argv) {
 
         config_st.MIN_RADIUS = configdoc["MIN_RADIUS"].GetInt();
         config_st.MAX_RADIUS = configdoc["MAX_RADIUS"].GetInt();
+        config_st.SPAWN_VEL  = configdoc["SPAWN_VEL"].GetDouble();
 
     // TIMING //
         config_st.TIME_STEP_COEFFICIENT = configdoc["TIME_STEP_COEFFICIENT"].GetDouble();
+
+    // ELASTIC COLLISION CONFIG //
+        config_st.P_RATIO = configdoc["P_RATIO"].GetDouble();
+        config_st.YOUNGS_MODULUS = configdoc["YOUNGS_MODULUS"].GetDouble();
     // Close Config //
         free((void *)config_json);
 

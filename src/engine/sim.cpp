@@ -27,12 +27,13 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 		int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
 		int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
 
-		float vel_x = frandom(-0.5, 0.5);
-		float vel_y = frandom(-0.5, 0.5);
+		float s_vel = (float)conf->SPAWN_VEL;
+		float vel_x = frandom(-1.0 * s_vel, s_vel);
+		float vel_y = frandom(-1.0 * s_vel, s_vel);
 
 		float mass = radius * radius * 3.14159 * 0.25;
 
-		Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i);
+		Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i, conf->P_RATIO, conf->YOUNGS_MODULUS);
 		ball->attachWriter(dw);
 
 		vecBalls.emplace_back(*ball);
@@ -100,7 +101,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 		// Overlap //
 
-		float overlap = dist - (ball1.m_radius - ball2.m_radius);
+		float overlap = (ball1.m_radius + ball2.m_radius) - dist;
 		//overlap = overlap * overlap * overlap;
 
 		///////////////////
@@ -143,7 +144,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 		/////////////////////////
 
 		// Overlap //
-		float overlap = dist - (ball1.m_radius - ball2.m_radius);
+		float overlap = (ball1.m_radius + ball2.m_radius) - dist;
 		//overlap = overlap * overlap * overlap;
 
 		/////////////////////////

@@ -52,6 +52,10 @@ struct config_data_t{
 
 	int MIN_RADIUS;
 	int MAX_RADIUS;
+	double SPAWN_VEL;
+
+	double P_RATIO;
+	double YOUNGS_MODULUS;
 
 };
 #endif

@@ -14,8 +14,8 @@ public:
 	Eigen::Vector2f m_p;   //Momentum
 
 	//Physical Constants for Hertzian Contact
-	float v_p; //Poisson's Ratio (Ratio of transverse to axial strain)
-	float E;
+	double v_p; //Poisson's Ratio (Ratio of transverse to axial strain)
+	double E;   // Young's Modulus
 
 	//Physical Data
 	float m_mass;
@@ -33,14 +33,14 @@ private:
 
 public:
 	//Constructor
-	Ball(Eigen::Vector2f pos, Eigen::Vector2f vel, float radius, float mass, struct window_t *window, unsigned int id_in)
+	Ball(Eigen::Vector2f pos, Eigen::Vector2f vel, float radius, float mass, struct window_t *window, unsigned int id_in, double P_RATIO, double YOUNGS_MODULUS)
 		:m_pos(pos[0], pos[1]), m_vel(vel[0], vel[1]), m_acc(0.0f,0.0f), m_mass(mass)
 	{
 		this->id = id_in;
 		
 		//Constant Initialization
-		v_p = 0.001;
-		E = 1000000000;
+		v_p = P_RATIO;
+		E = YOUNGS_MODULUS;
 		debug = false;
 		
 		//Member Assignment
