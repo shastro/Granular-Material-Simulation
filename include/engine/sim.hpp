@@ -7,6 +7,7 @@
 #include "engine.hpp"
 #include "utils.hpp"
 #include "ball.hpp"
+#include "grid.hpp"
 
 //Handles all collision checking, evaluation, and calculation of collision response, as well as time step
 
@@ -22,12 +23,14 @@ private:
 
 	struct window_t *window;
 	struct config_data_t *conf;
+
 public:
 	double dt; //Change in time between frames
 
 private:
 //Simulation Data
 	std::vector<Ball> vecBalls;
+	SpatialHash *shash;
 	int nParticles;
 
 public:

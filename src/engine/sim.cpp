@@ -13,7 +13,8 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 	this->nSimulationSubSteps = conf->SUB_FRAME_COUNT;
 	m_COLLISION_MODE = conf->COLLISION_MODE;
 
-
+	// Spatial Hash //
+	shash = new SpatialHash(window->width, window->height, 4 * conf->MAX_RADIUS);
 	//Create Balls with random initial data.
 	for (int i = 0; i < nParticles; i++) {
 
@@ -66,8 +67,26 @@ bool Simulation_Engine::checkBallIntersect(Ball& ball1, Ball& ball2)
 }
 void Simulation_Engine::detectCollisions()
 {
+	// for (auto & ball : vecBalls) {
+	// 	for (auto & other : vecBalls) {
+	// 		if (ball.id != other.id) {
+	// 			if (checkBallIntersect(ball, other)) {
+	// 				ball.colliding = true;
+	// 				other.colliding = true;
+
+	// 				applyBallResponse(ball, other);
+	// 			}
+	// 		}
+
+	// 	}
+	// }
+
+    std::vector<Ball> *neighbors; 
+		
 	for (auto & ball : vecBalls) {
-		for (auto & other : vecBalls) {
+		//PRINT("IN CALCSTEPS")
+		neighbors = (shash->query(ball));
+		for (auto & other : *neighbors) {
 			if (ball.id != other.id) {
 				if (checkBallIntersect(ball, other)) {
 					ball.colliding = true;
@@ -78,7 +97,16 @@ void Simulation_Engine::detectCollisions()
 			}
 
 		}
+		//PRINT("FUG")
+		neighbors->clear();
+		// neighbors->shrink_to_fit();
+		// std::vector<Ball>().swap(*neighbors);
+		// //delete neighbors;
+		//free((void *)neighbors);
+		
+		//PRINT("FUG2")
 	}
+
 }
 void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 {
@@ -218,28 +246,29 @@ void Simulation_Engine::calcSteps(int sub_frame)
 		if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
 			dw->StartObject();
 			dw->Key("id");
-			dw->Uint(vecBalls.at(i).id);
+			dw->Uint(vecBalls[i].id);
 			// PHYSICS //
-			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
-			vecBalls.at(i).writeData();
+			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
+			vecBalls[i].writeData();
 			////////////
 			dw->EndObject();
 		}else if (conf->MINIMIZE_DATA == false){
 			dw->StartObject();
 			dw->Key("id");
-			dw->Uint(vecBalls.at(i).id);
+			dw->Uint(vecBalls[i].id);
 
 			/////////
-			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
-			vecBalls.at(i).writeData();
+			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
+			vecBalls[i].writeData();
 			/////////
 			dw->EndObject();
 		}else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)){
 			///////
-			vecBalls.at(i).update(fSimElapsedTime, window->spawnbuffer);
+			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
 			///////
 		 } //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
 		
+		vecBalls[i].clearBuckets();
 		
 	}
 
@@ -254,11 +283,15 @@ void Simulation_Engine::calcSteps(int sub_frame)
 	}
 	
 
+	
+
+
 }
 
 void Simulation_Engine::simLoop()
 {
 	
+
 	//MAIN LOGIC//
 
 	// SUB FRAME DATA SETUP //
@@ -268,6 +301,9 @@ void Simulation_Engine::simLoop()
 	fSimElapsedTime = (double)conf->TIME_STEP_COEFFICIENT / (double) nSimulationSubSteps;
 
 	for (int i = 0; i < nSimulationSubSteps; i++) {
+
+		// Build Hash
+		shash->build(vecBalls);
 
 		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
 			dw->StartObject();
@@ -297,7 +333,8 @@ void Simulation_Engine::simLoop()
 			dw->EndObject();
 		}
 		
-
+		// Clear Hash
+		shash->clear();
 		std::cout << '\r' << "Sub-Frame Completion: " << std::setw(8)/* << std::setfill('0') */ << (100 * (float)(i + 1) / (float)nSimulationSubSteps) << "%" << std::flush;
 
 	}

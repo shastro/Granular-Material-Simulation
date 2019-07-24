@@ -4,6 +4,8 @@
 #include "engine.hpp"
 #include "utils.hpp"
 
+class Bucket;
+
 class Ball
 {
 public:
@@ -24,6 +26,8 @@ public:
 	//Identification
 	unsigned int id;
 	bool colliding;
+
+	std::vector<int> bucketids;
 
 private:
 	bool debug;
@@ -62,7 +66,8 @@ public:
 	void update(double time_delta, int b_zone);
 	void attachWriter(rj::Writer<rj::StringBuffer> *dw);
 	void writeData();
-
+	void addBucket(int bucketid);
+	void clearBuckets();
 
 
 

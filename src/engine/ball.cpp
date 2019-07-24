@@ -167,6 +167,20 @@ void Ball::writeData()
 	dw->EndObject();
 }
 
+void Ball::addBucket(int bucketid)
+{
+	bucketids.emplace_back(bucketid);
+	//PRINT(bucketids.size())
+}
+
+void Ball::clearBuckets()
+{
+	bucketids.clear();
+	bucketids.shrink_to_fit();
+	std::vector<int>().swap(bucketids);
+}
+
+
 Ball::~Ball()
 {
 	//printf("Ball %d Deleted\n", id);

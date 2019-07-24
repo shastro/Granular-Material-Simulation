@@ -161,27 +161,27 @@ int main(int argc, char**argv) {
 
         updateParticles(i, particles, data);
 
+        //////////////////
+        // DRAWING TEXT //
+        //////////////////
         if(DRAW_TEXT){
             std::string s("frame: ");
             s =  s + std::to_string(i);
             t_frameCount.setString(s.c_str());
 
             window.draw(t_simname);
-
-            
-            
             window.draw(t_frameCount);
 
         }
+
         window.display();
         end = clock();
 
-        // DRAWING TEXT //
-
-
+        //////////////////////////
+        // FRAMERATE MANAGEMENT //
+        //////////////////////////
         double time = ((double)(end - start) / (double)CLOCKS_PER_SEC) * 1000000;
         double refresh_rate = ((double)1     / (double)FRAMERATE)      * 1000000;
-        // FRAMERATE MANAGEMENT //
         double remainder;
         if (refresh_rate - time > 0) {
 
@@ -192,6 +192,7 @@ int main(int argc, char**argv) {
         usleep(remainder);
 
        LOG("FRAME: ", i)
+       LOG("FPS: ", time/ 100)
 
         
         // EVENT POLLING //

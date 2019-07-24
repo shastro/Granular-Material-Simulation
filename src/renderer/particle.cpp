@@ -28,6 +28,10 @@ void Particle::draw(bool DRAW_OUTLINE)
     m_shape.setRadius(m_radius);
     m_shape.setFillColor(m_color);
     m_shape.setPosition(m_pos);
+
+    if(m_radius < 10){
+        m_shape.setPointCount(10);
+    }
     
     if(DRAW_OUTLINE){
         m_shape.setOutlineColor(sf::Color::Black);
