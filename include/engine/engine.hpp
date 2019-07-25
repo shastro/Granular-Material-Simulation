@@ -47,6 +47,7 @@ struct config_data_t{
 
 	int MEMORY_FRAME_SAVE_THRESHOLD;
 	bool MINIMIZE_DATA;
+	bool OPTIMIZE;
 
 	double TIME_STEP_COEFFICIENT;
 

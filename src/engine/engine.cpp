@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 
         config_st.MEMORY_FRAME_SAVE_THRESHOLD = configdoc["MEMORY_FRAME_SAVE_THRESHOLD"].GetInt();
         config_st.MINIMIZE_DATA = configdoc["MINIMIZE_DATA"].GetBool();
-
+        config_st.OPTIMIZE = configdoc["OPTIMIZE"].GetBool();
     // SPAWNING INFO //
 
         config_st.MIN_RADIUS = configdoc["MIN_RADIUS"].GetInt();
@@ -204,7 +204,9 @@ int main(int argc, char **argv) {
     clock_t end;
     end = clock();
 
-    PRINT("COMPLETION TIME: "<< (double)(end - start)/ CLOCKS_PER_SEC << "seconds")
+    double time =  (double)(end - start)/ CLOCKS_PER_SEC;
+    PRINT("COMPLETION TIME: "<< time << "seconds")
+    PRINT("AVERAGE FPS: " << (double) config_st.FRAMELIMIT / time)
     // clean up :)
     delete Engine;
     dw.Reset(docbuffer);

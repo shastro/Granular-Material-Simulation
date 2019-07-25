@@ -27,6 +27,7 @@ std::vector<Ball> *Bucket::get()
     return &Balls;
 }
 
+
 void Bucket::clear()
 {
     //free(Balls);
@@ -158,7 +159,15 @@ void SpatialHash::clear()
     //delete buckets;
     //free(buckets);
 }
+int SpatialHash::getBucketCount()
+{
+    return nBuckets;
+}
 
+Bucket *SpatialHash::getBuckets()
+{
+    return buckets;
+}
 SpatialHash::~SpatialHash()
 {
    delete[] buckets;

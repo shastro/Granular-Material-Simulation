@@ -27,7 +27,7 @@ void Ball::update(double time_delta, int b_zone)
 	//Integration of Newton's Laws
 
 	m_vel = m_vel + m_acc * time_delta;
-	m_vel[1] = m_vel[1] + 60;
+	m_vel[1] = m_vel[1] + 100;
 	m_pos = m_pos + m_vel * time_delta;
 	
 	

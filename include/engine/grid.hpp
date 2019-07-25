@@ -89,6 +89,8 @@ public:
     //Inserts a Ball into its appropriate buckets
     void insert(Ball &ball);
 
+    int getBucketCount();
+    Bucket *getBuckets();
 
     void clear();
 

@@ -19,12 +19,12 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 	for (int i = 0; i < nParticles; i++) {
 
 		int radius;
-		if(conf->MIN_RADIUS != conf->MAX_RADIUS){
-			radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS); 
-		}else{
+		if (conf->MIN_RADIUS != conf->MAX_RADIUS) {
+			radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS);
+		} else {
 			radius = conf->MIN_RADIUS;
 		}
-		
+
 		int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
 		int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
 
@@ -67,45 +67,44 @@ bool Simulation_Engine::checkBallIntersect(Ball& ball1, Ball& ball2)
 }
 void Simulation_Engine::detectCollisions()
 {
-	// for (auto & ball : vecBalls) {
-	// 	for (auto & other : vecBalls) {
-	// 		if (ball.id != other.id) {
-	// 			if (checkBallIntersect(ball, other)) {
-	// 				ball.colliding = true;
-	// 				other.colliding = true;
 
-	// 				applyBallResponse(ball, other);
-	// 			}
-	// 		}
+	if (conf->OPTIMIZE) {
+		std::vector<Ball> *neighbors;
 
-	// 	}
-	// }
+		for (auto & ball : vecBalls) {
+			neighbors = (shash->query(ball));
+			for (auto & other : *neighbors) {
+				if (ball.id != other.id) {
+					if (checkBallIntersect(ball, other)) {
+						ball.colliding = true;
+						other.colliding = true;
 
-    std::vector<Ball> *neighbors; 
-		
-	for (auto & ball : vecBalls) {
-		//PRINT("IN CALCSTEPS")
-		neighbors = (shash->query(ball));
-		for (auto & other : *neighbors) {
-			if (ball.id != other.id) {
-				if (checkBallIntersect(ball, other)) {
-					ball.colliding = true;
-					other.colliding = true;
-
-					applyBallResponse(ball, other);
+						applyBallResponse(ball, other);
+					}
 				}
+
 			}
 
+			neighbors->clear();
+
 		}
-		//PRINT("FUG")
-		neighbors->clear();
-		// neighbors->shrink_to_fit();
-		// std::vector<Ball>().swap(*neighbors);
-		// //delete neighbors;
-		//free((void *)neighbors);
-		
-		//PRINT("FUG2")
+
+	} else {
+	//brute force
+		for (auto & ball : vecBalls) {
+			for (auto & other : vecBalls) {
+				if (ball.id != other.id) {
+					if (checkBallIntersect(ball, other)) {
+						ball.colliding = true;
+						other.colliding = true;
+
+						applyBallResponse(ball, other);
+					}
+				}
+			}
+		}
 	}
+
 
 }
 void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
@@ -231,19 +230,19 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 void Simulation_Engine::calcSteps(int sub_frame)
 {
 
-	if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
+	if (conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)) {
 		dw->Key("particles");
 		dw->StartArray();
-	}else if (conf->MINIMIZE_DATA == false){
+	} else if (conf->MINIMIZE_DATA == false) {
 		dw->Key("particles");
 		dw->StartArray();
-	}else{
+	} else {
 		// Do nothing
 	}
 
 	for (int i = 0; i < nParticles; i++) {
 
-		if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
+		if (conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)) {
 			dw->StartObject();
 			dw->Key("id");
 			dw->Uint(vecBalls[i].id);
@@ -252,7 +251,7 @@ void Simulation_Engine::calcSteps(int sub_frame)
 			vecBalls[i].writeData();
 			////////////
 			dw->EndObject();
-		}else if (conf->MINIMIZE_DATA == false){
+		} else if (conf->MINIMIZE_DATA == false) {
 			dw->StartObject();
 			dw->Key("id");
 			dw->Uint(vecBalls[i].id);
@@ -262,42 +261,42 @@ void Simulation_Engine::calcSteps(int sub_frame)
 			vecBalls[i].writeData();
 			/////////
 			dw->EndObject();
-		}else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)){
+		} else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)) {
 			///////
 			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
 			///////
-		 } //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
-		
+		} //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
+
 		vecBalls[i].clearBuckets();
-		
+
 	}
 
-	if(conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)){
+	if (conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)) {
 		dw->EndArray();
 
-	}else if (conf->MINIMIZE_DATA == false){
+	} else if (conf->MINIMIZE_DATA == false) {
 
 		dw->EndArray();
-	}else {
+	} else {
 		//Do nothing
 	}
-	
 
-	
+
+
 
 
 }
 
 void Simulation_Engine::simLoop()
 {
-	
+
 
 	//MAIN LOGIC//
 
 	// SUB FRAME DATA SETUP //
 	dw->Key("SUBFRAMES");
 	dw->StartArray();
-	
+
 	fSimElapsedTime = (double)conf->TIME_STEP_COEFFICIENT / (double) nSimulationSubSteps;
 
 	for (int i = 0; i < nSimulationSubSteps; i++) {
@@ -309,9 +308,9 @@ void Simulation_Engine::simLoop()
 			dw->StartObject();
 
 			dw->Key("sub_frame");
-			dw->Uint(0);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+			dw->Uint(0);
 
-		} else if (conf->MINIMIZE_DATA == false){
+		} else if (conf->MINIMIZE_DATA == false) {
 			dw->StartObject();
 
 			dw->Key("sub_frame");
@@ -326,13 +325,13 @@ void Simulation_Engine::simLoop()
 
 		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
 
-			dw->EndObject();     
+			dw->EndObject();
 
-		} else if (conf->MINIMIZE_DATA == false){
+		} else if (conf->MINIMIZE_DATA == false) {
 
 			dw->EndObject();
 		}
-		
+
 		// Clear Hash
 		shash->clear();
 		std::cout << '\r' << "Sub-Frame Completion: " << std::setw(8)/* << std::setfill('0') */ << (100 * (float)(i + 1) / (float)nSimulationSubSteps) << "%" << std::flush;
