@@ -24,10 +24,13 @@ public:
 	float m_radius;
 	
 	//Identification
-	unsigned int id;
+	unsigned int force_applied_count;
+	unsigned int m_Id;
 	bool colliding;
 
-	std::vector<int> bucketids;
+	int bucketids[4];
+	int bucketids_Max; //Keeps track of maximum valid index
+	//std::vector<int> bucketids;
 
 private:
 	bool debug;
@@ -40,7 +43,9 @@ public:
 	Ball(Eigen::Vector2f pos, Eigen::Vector2f vel, float radius, float mass, struct window_t *window, unsigned int id_in, double P_RATIO, double YOUNGS_MODULUS)
 		:m_pos(pos[0], pos[1]), m_vel(vel[0], vel[1]), m_acc(0.0f,0.0f), m_mass(mass)
 	{
-		this->id = id_in;
+		this->m_Id = id_in;
+		bucketids_Max = 0;
+		force_applied_count = 0;
 		
 		//Constant Initialization
 		v_p = P_RATIO;
@@ -52,8 +57,7 @@ public:
 		m_window = window;
 		
 		//Momentum
-		m_p = m_vel;
-		m_p = m_p * mass;
+		m_p = m_vel * mass;
 
 
 	}
@@ -63,13 +67,16 @@ public:
 
 	//Ball Physics Calculations
 	void applyForce(Eigen::Vector2f force, double time_delta);
-	void update(double time_delta, int b_zone);
+	void update(double time_delta);
 	void attachWriter(rj::Writer<rj::StringBuffer> *dw);
 	void writeData();
-	void addBucket(int bucketid);
-	void clearBuckets();
 
-
+    //Getters
+    float getRadius() const;
+    float getMass()   const;
+    Eigen::Vector2f &getPos();
+    float getX() const;
+    float getY() const;
 
 
 

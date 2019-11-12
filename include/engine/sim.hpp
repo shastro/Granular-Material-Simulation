@@ -15,49 +15,37 @@ class Simulation_Engine
 {
 private:
 //Simulation Properties
-	double fSimElapsedTime;
-	int   nSimulationSubSteps; //Subframes
-	int m_COLLISION_MODE;
+	 double fSimElapsedTime;
+	 int   nSimulationSubSteps; //Subframes
+	 int m_COLLISION_MODE;
 
-	rj::Writer<rj::StringBuffer> *dw;
+	 rj::Writer<rj::StringBuffer> *dw;
 
-	struct window_t *window;
-	struct config_data_t *conf;
+	 struct window_t *window;
+	 struct config_data_t *conf;
 
 public:
-	double dt; //Change in time between frames
+	 double dt; //Change in time between frames
 
 private:
 //Simulation Data
-	std::vector<Ball> vecBalls;
-	SpatialHash *shash;
-	int nParticles;
+	 std::vector<Ball*> vecBalls;
+	 SpatialHash<Ball> *shash;
+	 int nParticles;
 
 public:
 	Simulation_Engine(struct window_t *window, rj::Writer<rj::StringBuffer> *dw, struct config_data_t *config);
 	~Simulation_Engine();
 
 	
-	void simLoop();
+	 void simLoop();
 
-	void detectCollisions();
-	void calcSteps(int sub_frame);
+	 void detectCollisions();
+	 void calcSteps(int sub_frame);
 
-private:
-	void applyBallResponse(Ball& ball, Ball& ball2);
-	bool checkBallIntersect(Ball& ball1, Ball& ball2);
-
-
-
-
-
-
-
-
-
-
-
-
+public:
+	 void applyBallResponse(Ball *ball, Ball *ball2);
+	 bool checkBallIntersect(Ball *ball1, Ball *ball2);
 };
 
 

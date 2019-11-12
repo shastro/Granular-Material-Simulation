@@ -2,6 +2,7 @@
     "DATA_PATH" : "../sim_data/",
     "FRAMERATE": 60,
     "DRAW_TEXT": true,
-    "DRAW_OUTLINE": false
+    "DRAW_OUTLINE": false,
+    "DRAW_BOUNDING_BOX": false
 
 }

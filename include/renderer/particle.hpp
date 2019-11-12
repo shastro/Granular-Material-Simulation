@@ -37,7 +37,8 @@ public:
    
 public: 
     void updateData(struct p_data_t& p_data);
-    void draw(bool DRAW_OUTLINE);
+    void drawBoundingBox();
+    void draw(bool DRAW_OUTLINE, int PARTICLE_COUNT);
 
 };
 

@@ -14,30 +14,74 @@
 
 sf::Event event;
 
+bool PAUSED;
+
+
+void drawGrid(sf::Color linecolor, int cellsize, int width, int height, sf::RenderWindow *window) {
+
+    //Vertical
+    for (int i = 0; i < (width / cellsize) + 1; i++) {
+        int x1 = i * cellsize;
+        int y2 = height;
+
+        sf::Vertex line[2]; //= new sf::Vertex[2];
+
+        line[0] = sf::Vertex (sf::Vector2f(x1, 0),  linecolor);
+        line[1] = sf::Vertex (sf::Vector2f(x1, y2), linecolor);
+
+        //vlines[i] = line;
+        window->draw(line, 2, sf::Lines);
+        //free(line);
+    }
+
+    //Horizontal
+    for (int i = 0; i < (height / cellsize) + 1; i++) {
+        int y1 = i * cellsize;
+        int x2 = width;
+
+        sf::Vertex line[2];
+        // sf::Vertex line2[2];
+
+        // line[0] = sf::Vertex (sf::Vector2f(0, y1),  linecolor);
+        // line[1] = sf::Vertex (sf::Vector2f(1000, y1), linecolor);
+
+        line[0] = sf::Vertex (sf::Vector2f(1, y1),  linecolor);
+        line[1] = sf::Vertex (sf::Vector2f(1000, y1), linecolor);
+        // line2[0] = sf::Vertex (sf::Vector2f(0, y1),      linecolor);
+        // line2[1] = sf::Vertex (sf::Vector2f(width, y1),  linecolor);
+
+        window->draw(line, 2, sf::Lines);
+        //free(line);
+        // hlines[i] = line;
+    }
+
+}
+
 int main(int argc, char**argv) {
 
     std::string filename;
 
-    if(argc == 1){
+    if (argc == 1) {
         printf("Enter filename: ");
         std::cin >> filename;
-    }else{
+    } else {
         filename = std::string(argv[1]);
     }
-    
+
     // CONFIG PARSING //
 
     char *sdata_json = load_file("../config/render-conf.json");
 
-        rj::Document configdoc;
-        PRINT("PARSING CONFIG")
-        configdoc.Parse(sdata_json);
-        int FRAMERATE     = configdoc["FRAMERATE"].GetInt();
-        bool DRAW_TEXT    = configdoc["DRAW_TEXT"].GetBool();
-        bool DRAW_OUTLINE = configdoc["DRAW_OUTLINE"].GetBool();
-        const char *data_path   = configdoc["DATA_PATH"].GetString();
+    rj::Document configdoc;
+    PRINT("PARSING CONFIG")
+    configdoc.Parse(sdata_json);
+    int FRAMERATE     = configdoc["FRAMERATE"].GetInt();
+    bool DRAW_TEXT    = configdoc["DRAW_TEXT"].GetBool();
+    bool DRAW_OUTLINE = configdoc["DRAW_OUTLINE"].GetBool();
+    bool DRAW_BOUNDING_BOX = configdoc["DRAW_BOUNDING_BOX"].GetBool();
+    const char *data_path   = configdoc["DATA_PATH"].GetString();
 
-        PRINT("PARSING COMPLETE")
+    PRINT("PARSING COMPLETE")
 
     free((void *)sdata_json);
 
@@ -58,19 +102,22 @@ int main(int argc, char**argv) {
     // WINDOW SETUP //
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
-    sf::RenderWindow window(sf::VideoMode(data["WINDOW_DATA"]["width"].GetInt(), data["WINDOW_DATA"]["height"].GetInt()),
+    int width  = data["WINDOW_DATA"]["width"].GetInt();
+    int height = data["WINDOW_DATA"]["height"].GetInt();
+    sf::RenderWindow window(sf::VideoMode(width, height),
                             (std::string("Rendering Sim: ") + filename).c_str(), sf::Style::Default, settings);
 
-    std::vector<Particle*> particles;
 
     PRINT("INITIALIZING PARTICLES")
     // Particle Initialization with first frame's data
+    std::vector<Particle*> particles;
     for (int j = 0; j < data["PARTICLE_COUNT"].GetInt(); j++) {
 
 
         sf::Vector2f pos(0, 0);
         sf::Vector2f vel(0, 0);
         sf::Vector2f acc(0, 0);
+
         // Value Capture for shorthand
         rj::Value& posX = data["FRAME_DATA"][0]["SUBFRAMES"][0]["particles"][j]["p_data"]["p"]["x"];
         rj::Value& posY = data["FRAME_DATA"][0]["SUBFRAMES"][0]["particles"][j]["p_data"]["p"]["y"];
@@ -120,17 +167,17 @@ int main(int argc, char**argv) {
     sf::Text t_simname;
 
     sf::Font font;
-    if(!font.loadFromFile("../assets/font.ttc")){
+    if (!font.loadFromFile("../assets/font.ttc")) {
         PRINT("\e[91;50m[ERROR]: Font not found!\e[37m")
     }
 
-    if(DRAW_TEXT){
-        // Framecount 
+    if (DRAW_TEXT) {
+        // Framecount
         t_frameCount.setFont(font);
         t_frameCount.setPosition(sf::Vector2f(0.0, 30));
         t_frameCount.setColor(sf::Color::Red);
         t_frameCount.setCharacterSize(24);
-        
+
         // Sim Name
         t_simname.setFont(font);
         std::string sim("sim: ");
@@ -140,31 +187,58 @@ int main(int argc, char**argv) {
 
     }
 
-   PRINT("\e[32mINITIALIZATION COMPLETE\e[37m")
+    PRINT("\e[32mINITIALIZATION COMPLETE\e[37m")
 
-    // WINDOW BORDER //
-   //sf::RectangleShape border(width)
-    // MAIN FRAMELOOP //
+    // Grid Lines //
+
+    bool DRAW_GRID;
+    int cellsize;
+    if (data.HasMember("CELLSIZE")) {
+
+        cellsize = data["CELLSIZE"].GetInt();
+        DRAW_GRID = true;
+    } else {
+        DRAW_GRID = false;
+    }
+
+    /////////////
 
     PRINT("BEGINING MAIN LOOP")
+    // MAIN FRAMELOOP //
     for (int i = 0; i < data["FRAMELIMIT"].GetInt(); i++)
     {
-  
+
+
 
         clock_t start, end;
         start = clock();
-        window.clear(sf::Color(250,250,250));
+        window.clear(sf::Color(250, 250, 250));
+
+        //////////////////////////
+        // DRAW BACKGROUND GRID //
+        //////////////////////////
+
+        //Color light blue 189, 209, 242
+        drawGrid(sf::Color(189, 209, 242), 25, width, height, &window);
+        ///////////////////////
+        // DRAWING PARTICLES //
+        ///////////////////////
 
         for (auto & particle : particles) {
-            particle->draw(DRAW_OUTLINE);
+            particle->draw(DRAW_OUTLINE, data["PARTICLE_COUNT"].GetInt());
         }
 
+        if (DRAW_BOUNDING_BOX) {
+            for (auto & particle : particles) {
+                particle->drawBoundingBox();
+            }
+        }
         updateParticles(i, particles, data);
 
         //////////////////
         // DRAWING TEXT //
         //////////////////
-        if(DRAW_TEXT){
+        if (DRAW_TEXT) {
             std::string s("frame: ");
             s =  s + std::to_string(i);
             t_frameCount.setString(s.c_str());
@@ -174,6 +248,15 @@ int main(int argc, char**argv) {
 
         }
 
+        //////////////////
+        // DRAWING HASH GRID //
+        //////////////////
+
+        if (DRAW_GRID) {
+            drawGrid(sf::Color(50,50,50), cellsize, width, height, &window);
+        }
+
+        // DISPLAY //
         window.display();
         end = clock();
 
@@ -191,14 +274,40 @@ int main(int argc, char**argv) {
         }
         usleep(remainder);
 
-       LOG("FRAME: ", i)
-       LOG("FPS: ", time/ 100)
+        //LOG("FRAME: ", i)
+        // LOG("FPS: ", time / 100)
 
-        
+
         // EVENT POLLING //
         sf::Event event;
         window.pollEvent(event);
-        
+
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Space) {
+                PRINT("PAUSED")
+                while (1) {
+                    sf::Event event;
+                    window.pollEvent(event);
+                    if (event.type == sf::Event::KeyPressed) {
+                        break;
+                    }
+
+                    if (event.type == sf::Event::Closed) {
+                        window.close();
+                        return 0;
+                    }
+                }
+
+            }
+
+            if (event.key.code == sf::Keyboard::R) {
+                i = 0;
+            }
+            if(event.key.code == sf::Keyboard::Right) {
+                i += 1;
+            }
+        }
+
         if (event.type == sf::Event::Closed) {
             window.close();
             return 0;
@@ -209,16 +318,17 @@ int main(int argc, char**argv) {
     sf::Event newevent;
     while (1) {
 
-        
+
 
         window.pollEvent(newevent);
 
         if (newevent.type == sf::Event::Closed) {
+            // free(vlines);
             window.close();
             return 0;
         }
-        
-        
+
+
     }
 
     for (auto & particle : particles) {

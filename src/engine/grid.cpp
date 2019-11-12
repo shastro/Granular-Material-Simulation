@@ -1,174 +1,209 @@
 #include "grid.hpp"
 
 
-////////////
-// Bucket //
-////////////
-
-void Bucket::fill(std::vector <Ball>& iBalls)
-{
-    // if (!(iBalls.empty())) {
-    //     vBalls.insert(vBalls.end(), iBalls.begin(), iBalls.end());
-    // } else {
-    //     vBalls = iBalls;
-    // }
-}
-
-void Bucket::insert(Ball &ball)
-{
-    Balls.emplace_back(ball);
-    //PRINT(index)
-    //vBalls.emplace_back(ball);
-
-}
-
-std::vector<Ball> *Bucket::get()
-{
-    return &Balls;
-}
-
-
-void Bucket::clear()
-{
-    //free(Balls);
-    Balls.clear();
-    Balls.shrink_to_fit();
-    std::vector<Ball>().swap(Balls);
-}
-
 //////////////////
 // Spatial Hash //
 //////////////////
+template<typename T>
+SpatialHash<T>::SpatialHash(int width, int height, int cellsize)
+    {
+        m_width    = width;
+        m_height   = height;
+        m_cellsize = cellsize;
+        m_particleCount = 0;
 
-void SpatialHash::build(std::vector<Ball>& vecBalls)
+        //Determine number of buckets needed
+
+        int cols = m_width  / m_cellsize;
+        int rows = m_height / m_cellsize;
+
+        nBuckets = (cols + 1) * (rows + 1);
+
+        table = new std::vector<std::list<T*>>;
+        table->reserve(nBuckets);
+
+        for (int i = 0; i < nBuckets; i++){
+            std::list<T*> *temp = new std::list<T*>;
+            (*table).push_back(*temp);
+        }
+
+    }
+
+template<typename T>
+SpatialHash<T>::~SpatialHash()
+{
+   for(int i = 0; i < nBuckets; i++){
+        (*table)[i].clear();
+        delete &((*table)[i]);
+   }
+   delete table;
+}
+template<typename T>
+void SpatialHash<T>::build(const std::vector<T*>& vecParticles)
 {
 
-    //Place balls in buckets
-    for (auto & ball : vecBalls) {
-        insert(ball);
+    //Place Particles in buckets
+    m_particleCount = vecParticles.size();
+    for (auto &p : vecParticles) {
+        insert(p);
     }
 
 }
-
-std::vector<Ball>* SpatialHash::query(Ball &ball)
+template<typename T>
+void SpatialHash<T>::attach_DetectCollision( bool (*collide)(T* a, T* b))
 {
-    //std::vector<Ball> *ballqueue = new std::vector<Ball>;
-     Bucket bucket;
-    std::vector<Ball> *b_balls;
-
-    //Add relevant buckets to ball buckets
-    for (int i = 0 ; i < ball.bucketids.size(); i++) {
-        int id = ball.bucketids[i];
-            //PRINT("YEET")
-            //PRINT( (*(bucket.get())).begin() << "   " << (*(bucket.get()).begin())  )
-        
-         bucket = buckets[id];
-        b_balls = bucket.get(); //Retrieve bucket deque of balls.
-
-        //(*ballqueue) += (*b_balls);
-        ballqueue->insert(std::end(*ballqueue), std::begin(*b_balls), std::end(*b_balls));
-            // (echo ../bin/ParticleRenderer sp1.json ; echo ../bin/ParticleRenderer sp2.json) | parallel 
-
-        //ballqueue->reserve(ballqueue->size() + b_balls->size());
-        //ballqueue->insert(ballqueue->end(), buckets[id].get()->begin(), buckets[id].get()->end() );
-        //std::copy(b_balls->begin(), b_balls->end(), std::back_inserter(*ballqueue));
-        // ballqueue->reserve(ballqueue->size() + b_balls->size());
-        //ballqueue->insert(ballqueue->end(), b_balls->begin(), b_balls->end() );
-       // std::copy(ballqueue->begin(), ballqueue->end(), back_inserter(*(buckets[bucketid].get())));   //bucket.clear();
-    }
-
-    //std::vector<Ball>().swap(*b_balls);
-   // PRINT("bb " << b_balls->size())
-   // PRINT("bq " << ballqueue->size())
-   //b_balls->clear();
-    return ballqueue;
+    detectCollision = collide;
+}
+template<typename T>
+void SpatialHash<T>::attach_ApplyCollision(void (*resolve)(T* a, T* b))
+{
+    applyCollision = resolve;
 }
 
-void SpatialHash::insert(Ball& ball)
+template<typename T>
+void SpatialHash<T>::attach_UpdateType(void (*update)(T *a))
+{
+    updateType = update;
+}
+
+/** Hashes a single point and returns its cellId
+*@param x, x coord of point
+*@param y, y coord of point
+*@return cellId
+*/
+template<typename T>
+int SpatialHash<T>::pointHash(float x, float y)
+{
+    float cellX = floor(x / m_cellsize);
+    float cellY = floor(y / m_cellsize);
+
+    //Clamping inside window range
+    if(x < 0){
+        cellX = 0;
+    }
+    if(y < 0){
+        cellY = 0;
+    }
+
+    if(x > m_width){
+        x = m_width;
+    }
+
+    if(y > m_height){
+        y = m_height;
+    }
+
+    return (int)cellX + ((int)cellY * (m_width / m_cellsize));
+}
+
+/** Hashes a Particle to its relevant cells within grid
+*@param Ref to a particle->
+*/
+template<typename T>
+void SpatialHash<T>::insert(T* particle)
 {
     // Upper Left
-    float ulX = ball.m_pos[0] - ball.m_radius;
-    float ulY = ball.m_pos[1] - ball.m_radius;
+    float ulX = particle->getX() - particle->getRadius();
+    float ulY = particle->getY() - particle->getRadius();
+
     //Bottom Right
-    float brX = ball.m_pos[0] + ball.m_radius;
-    float brY = ball.m_pos[1] + ball.m_radius;
+    float brX = particle->getX() + particle->getRadius();
+    float brY = particle->getY() + particle->getRadius();
 
     //Bottom Left
     float blX = ulX;
-    float blY = ulY + (ball.m_radius + ball.m_radius);
+    float blY = ulY + (particle->getRadius() + particle->getRadius());
 
     //Upper Right
-    float urX = ulX + (ball.m_radius + ball.m_radius);
+    float urX = ulX + (particle->getRadius() + particle->getRadius());
     float urY = ulY;
 
     //ids
-    int ulId = pointQuery(ulX, ulY);
-    int brId = pointQuery(brX, brY);
-    int blId = pointQuery(blX, blY);
-    int urId = pointQuery(urX, urY);
+    int ulId = pointHash(ulX, ulY);
+    int brId = pointHash(brX, brY);
+    int blId = pointHash(blX, blY);
+    int urId = pointHash(urX, urY);
 
     // PRINT("ul " << ulId << " br " << brId << " bl " << blId << " ur " << urId)
-    // Ball must only be in one bucket
     if (ulId == brId) {
-        ball.addBucket(ulId);
-        (buckets[ulId]).insert(ball);
-        // Ball must be in 4 buckets
-    } else if ((ulId != brId) && (ulId != blId) && (ulId != urId)) {
-        ball.addBucket(ulId); //Upp Left
-        ball.addBucket(brId); //Bot Right
-        ball.addBucket(urId); //Upp Right
-        ball.addBucket(blId); //Bot Left
-        try {
-            (buckets[ulId]).insert(ball);
-            (buckets[brId]).insert(ball);
-            (buckets[urId]).insert(ball);
-            (buckets[blId]).insert(ball);
-        } catch (const std::bad_alloc& e) {
-            PRINT(e.what())
-            exit(1);
-        }
-        //Ball must be in two buckets
-    } else {
-        ball.addBucket(ulId);
-        ball.addBucket(brId);
-        try {
-            (buckets[ulId]).insert(ball);
-            (buckets[brId]).insert(ball);
-        } catch (const std::bad_alloc& e) {
-            PRINT(e.what())
-            exit(1);
-        }
+        (*table)[ulId].push_back(particle);
 
+    } else if ((ulId != brId) && (ulId != blId) && (ulId != urId)) { 
+        (*table)[ulId].push_back(particle);
+        (*table)[brId].push_back(particle);
+        (*table)[urId].push_back(particle);
+        (*table)[blId].push_back(particle);
+  
+        //particle must be in two buckets
+    } else {
+        (*table)[ulId].push_back(particle);
+        (*table)[brId].push_back(particle);
     }
     // PRINT(buckets[50].get()->size())
 
 }
 
-int SpatialHash::pointQuery(float x, float y)
+template<typename T>
+void SpatialHash<T>::collidePairs()
 {
-    float cellX = floor(x / m_cellsize);
-    float cellY = floor(y / m_cellsize);
-    return (int)cellX + ((int)cellY * (m_width / m_cellsize));
-    //return buckets + bucketid;
-}
-void SpatialHash::clear()
-{
-    for (int i = 0 ; i < nBuckets; i++) {
-        buckets[i].clear();
+    //N loop through buckets
+    for(int i = 0; i < nBuckets; i++)
+    {
+        std::list<T*> &temp = (*table)[i];
+
+        if(temp.size() > 1){
+            
+            //N^2 loop through objects in each bucket
+            for(auto p : temp){
+                for(auto o : temp){
+                    if(p->m_Id != o->m_Id){
+                        if ((*detectCollision)(p,o)){
+                            (*applyCollision)(p, o);
+                            // printf("DETECTED\n");
+                        }
+                    }
+                }
+            }
+        }
     }
-    //delete buckets;
-    //free(buckets);
 }
-int SpatialHash::getBucketCount()
+template<typename T>
+void SpatialHash<T>::update(double time_delta)
 {
-    return nBuckets;
+    bool checked[m_particleCount] = {false};
+
+    for(int i = 0; i < nBuckets; i++)
+    {
+        std::list<T*> &temp = (*table)[i];
+
+        for(auto p : temp){
+            if(!checked[p->m_Id]){
+                checked[p->m_Id] = true;  
+                p->update(time_delta);
+                
+            }
+            p->colliding = false;
+        }
+
+    } 
+}
+template<typename T>
+void SpatialHash<T>::clear()
+{
+    for(int i = 0; i < nBuckets; i++)
+    {
+        (*table)[i].clear();
+    }
+}
+template<typename T>
+void SpatialHash<T>::print()
+{
+    for (int i = 0; i < nBuckets; i++)
+    {
+        printf("i: %d \t", i);
+        int size = (*table)[i].size();
+        printf("s: %d \n", size);
+    }
 }
 
-Bucket *SpatialHash::getBuckets()
-{
-    return buckets;
-}
-SpatialHash::~SpatialHash()
-{
-   delete[] buckets;
-}
+template class SpatialHash<Ball>;

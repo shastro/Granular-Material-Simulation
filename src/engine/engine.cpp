@@ -173,6 +173,7 @@ int main(int argc, char **argv) {
 
         Engine->simLoop();
 
+        // PERIODIC BUFFER FLUSH AND MEMORY FREE //
         if((i % config_st.MEMORY_FRAME_SAVE_THRESHOLD) == 0){
             printf("\n\e[91;50m[MEMORY DUMP]\e[37m");
             fprintf(dataout, "%s", docbuffer.GetString());
@@ -191,7 +192,6 @@ int main(int argc, char **argv) {
     }
 
     dw.EndArray();
-    // WRITING TO FILE //
 
     //End Wrapper Object
     dw.EndObject();

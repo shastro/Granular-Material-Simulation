@@ -13,8 +13,18 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 	this->nSimulationSubSteps = conf->SUB_FRAME_COUNT;
 	m_COLLISION_MODE = conf->COLLISION_MODE;
 
+	//////////////////
 	// Spatial Hash //
-	shash = new SpatialHash(window->width, window->height, 4 * conf->MAX_RADIUS);
+	//////////////////
+	int cellsize = 4 * conf->MAX_RADIUS;
+	shash = new SpatialHash<Ball>(window->width, window->height, cellsize);
+	shash->attach_DetectCollision(checkBallIntersect);
+	shash->attach_ApplyCollision(applyBallResponse);
+
+	//Writing CellSize to Data File
+	dw->Key("CELLSIZE");
+	dw->Uint(cellsize);
+
 	//Create Balls with random initial data.
 	for (int i = 0; i < nParticles; i++) {
 
@@ -37,7 +47,7 @@ Simulation_Engine::Simulation_Engine(struct window_t *window, rj::Writer<rj::Str
 		Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i, conf->P_RATIO, conf->YOUNGS_MODULUS);
 		ball->attachWriter(dw);
 
-		vecBalls.emplace_back(*ball);
+		vecBalls.push_back(ball);
 
 	}
 	PRINT("ENGINE CREATED")
@@ -50,15 +60,13 @@ Simulation_Engine::~Simulation_Engine()
 	// for(auto &ball : vecBalls){
 	// 	delete &ball;
 	// }
-	std::vector<Ball>().swap(vecBalls);
+	std::vector<Ball*>().swap(vecBalls);
 }
 
 //Checks ball collision between two balls
-bool Simulation_Engine::checkBallIntersect(Ball& ball1, Ball& ball2)
+bool Simulation_Engine::checkBallIntersect(Ball  *a, Ball *b)
 {
-	if ((ball1.m_pos - ball2.m_pos).squaredNorm() < ((ball1.m_radius + ball2.m_radius) * (ball1.m_radius + ball2.m_radius))) {
-
-		//std::cout << "Ballid: " << ball1.id << " " << "Targid: " << ball2.id << std::endl;
+	if ((a->m_pos - b->m_pos).squaredNorm() < ((a->m_radius + b->m_radius) * (a->m_radius + b->m_radius))) {
 		return true;
 
 	} else {
@@ -69,34 +77,18 @@ void Simulation_Engine::detectCollisions()
 {
 
 	if (conf->OPTIMIZE) {
-		std::vector<Ball> *neighbors;
-
-		for (auto & ball : vecBalls) {
-			neighbors = (shash->query(ball));
-			for (auto & other : *neighbors) {
-				if (ball.id != other.id) {
-					if (checkBallIntersect(ball, other)) {
-						ball.colliding = true;
-						other.colliding = true;
-
-						applyBallResponse(ball, other);
-					}
-				}
-
-			}
-
-			neighbors->clear();
-
-		}
+		
+		shash->build(vecBalls);
+		shash->collidePairs();
 
 	} else {
-	//brute force
-		for (auto & ball : vecBalls) {
-			for (auto & other : vecBalls) {
-				if (ball.id != other.id) {
+		//brute force
+		for (auto ball : vecBalls) {
+			for (auto other : vecBalls) {
+				if (ball->m_Id != other->m_Id) {
 					if (checkBallIntersect(ball, other)) {
-						ball.colliding = true;
-						other.colliding = true;
+						ball->colliding = true;
+						other->colliding = true;
 
 						applyBallResponse(ball, other);
 					}
@@ -107,9 +99,11 @@ void Simulation_Engine::detectCollisions()
 
 
 }
-void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
+void Simulation_Engine::applyBallResponse(Ball *a, Ball *b)
 {
-
+	//Dereferencing
+	Ball ball1 = *a;
+	Ball ball2 = *b;
 	//Support for multiple different types of collision response
 	switch (m_COLLISION_MODE) {
 	case (HERTZ):
@@ -152,7 +146,7 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 		// ApplyForce //
 
 		ball1.applyForce(force, fSimElapsedTime);
-		ball2.applyForce((force * -1), fSimElapsedTime);
+		//ball2.applyForce((force * -1), fSimElapsedTime);
 
 
 	}//Scope Wrapping
@@ -203,9 +197,11 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 
 
 		// Apply forces //
-
+		//if(ball1.force_applied_count < 1){
 		ball1.applyForce(force, fSimElapsedTime);
-		ball2.applyForce((force * -1), fSimElapsedTime);
+		//}
+		ball1.force_applied_count++;
+		//ball2.applyForce((force * -1), fSimElapsedTime);
 
 
 		//////////////////////
@@ -230,55 +226,36 @@ void Simulation_Engine::applyBallResponse(Ball& ball1, Ball& ball2)
 void Simulation_Engine::calcSteps(int sub_frame)
 {
 
-	if (conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)) {
+	if (sub_frame == nSimulationSubSteps - 1) {
 		dw->Key("particles");
 		dw->StartArray();
-	} else if (conf->MINIMIZE_DATA == false) {
-		dw->Key("particles");
-		dw->StartArray();
-	} else {
-		// Do nothing
 	}
 
-	for (int i = 0; i < nParticles; i++) {
-
-		if (conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)) {
+	for (int i = 0; i < vecBalls.size(); i++) {
+		if (sub_frame == nSimulationSubSteps - 1) {
 			dw->StartObject();
 			dw->Key("id");
-			dw->Uint(vecBalls[i].id);
+			dw->Uint(vecBalls[i]->m_Id);
+
 			// PHYSICS //
-			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
-			vecBalls[i].writeData();
+			vecBalls[i]->update(fSimElapsedTime);
+			vecBalls[i]->writeData();
 			////////////
 			dw->EndObject();
-		} else if (conf->MINIMIZE_DATA == false) {
-			dw->StartObject();
-			dw->Key("id");
-			dw->Uint(vecBalls[i].id);
-
-			/////////
-			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
-			vecBalls[i].writeData();
-			/////////
-			dw->EndObject();
-		} else if (conf->MINIMIZE_DATA == true && (sub_frame != nSimulationSubSteps - 1)) {
+	 	}else if (sub_frame != nSimulationSubSteps - 1) {
 			///////
-			vecBalls[i].update(fSimElapsedTime, window->spawnbuffer);
+			vecBalls[i]->update(fSimElapsedTime);
 			///////
 		} //If MINIMIZE_DATA is true but its not the last sub_frame do not write data
 
-		vecBalls[i].clearBuckets();
+		//LOG("PARTICLE: ", vecBalls[i].id)
+		//PRINT(vecBalls[i].force_appqlied_count);
 
 	}
 
-	if (conf->MINIMIZE_DATA == true && (sub_frame == nSimulationSubSteps - 1)) {
+	if (sub_frame == nSimulationSubSteps - 1) {
 		dw->EndArray();
 
-	} else if (conf->MINIMIZE_DATA == false) {
-
-		dw->EndArray();
-	} else {
-		//Do nothing
 	}
 
 
@@ -289,7 +266,11 @@ void Simulation_Engine::calcSteps(int sub_frame)
 
 void Simulation_Engine::simLoop()
 {
-
+	// float radius = 15;
+	// float mass = radius * radius * 3.14159 * 0.25;
+	// Ball *ball = new Ball(Eigen::Vector2f((float)500.0, (float)50.0), Eigen::Vector2f(0.0, 0.0), radius, mass, window, nParticles, conf->P_RATIO, conf->YOUNGS_MODULUS);
+	// vecBalls.emplace_back(*ball);
+	// nParticles++;
 
 	//MAIN LOGIC//
 
@@ -310,26 +291,20 @@ void Simulation_Engine::simLoop()
 			dw->Key("sub_frame");
 			dw->Uint(0);
 
-		} else if (conf->MINIMIZE_DATA == false) {
-			dw->StartObject();
-
-			dw->Key("sub_frame");
-			dw->Uint(i);
 		} else {
 			//Do nothing
 		}
+		//////////////////////////
 		// PHYSICS CALCULATIONS //
-		detectCollisions();
-		calcSteps(i);
+		//                      //
+		detectCollisions();     //
+		calcSteps(i);           //
+		//////////////////////////
 
-
-		if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
-
-			dw->EndObject();
-
-		} else if (conf->MINIMIZE_DATA == false) {
+		if (i == nSimulationSubSteps - 1) {
 
 			dw->EndObject();
+
 		}
 
 		// Clear Hash
@@ -344,3 +319,6 @@ void Simulation_Engine::simLoop()
 
 
 }
+
+// double Simulation_Engine::fSimElapsedTime;
+// int Simulation_Engine::m_COLLISION_MODE;

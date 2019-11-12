@@ -9,15 +9,17 @@ project "GranularSimulation"
     targetdir "../bin/"
     includedirs {"../include/engine", "../include/rapidjson", "../include/utils"}
     links {"sfml-graphics", "sfml-window" , "sfml-system", "m"}
-    buildoptions{"-O3"}---, "-v", "-da", "-Q"}
+    buildoptions{ "-g", "-O3"} --"-O3",
     files {"../src/engine/*.cpp", "../src/utils/*.cpp"}
-
+    -- symbols "On"
+    --11.69
     -- configuration "Debug"
     -- symbols "On"
 
 
     filter "configurations.Debug"
         defines {"DEBUG"}
+        buildoptions{"-g"}
         symbols "On"
 
     filter "configurations.Release"

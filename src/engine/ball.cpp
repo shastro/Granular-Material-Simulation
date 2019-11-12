@@ -5,33 +5,30 @@
 // PHYSICS //
 /////////////
 
+Ball::~Ball()
+{
+	//printf("Ball %d Deleted\n", id);
+}
 
 void Ball::applyForce(Eigen::Vector2f force, double time_delta)
 {
 	
-	m_acc = m_acc + (force * (1 / m_mass));
+	m_p = m_p + (force * time_delta);
 
 }
 
 //Updates position and velocities of objects, performs no or very little physics calculation, is only responsible for translating acceleration to position
-void Ball::update(double time_delta, int b_zone)
+void Ball::update(double time_delta)
 {
 
-	
-	//applyForce(Eigen::Vector2f(0.0, 30000000), time_delta); //Gravity 
-	//m_acc = m_acc + Eigen::Vector2f(0.0, 800000000);
-
-	Eigen::Vector2f m_acc_cpy = m_acc;
-	Eigen::Vector2f m_vel_cpy = m_vel;
+	int b_zone = 0;
+		
+	applyForce(Eigen::Vector2f(0.0, 3000), time_delta); //Gravity 
 
 	//Integration of Newton's Laws
-
-	m_vel = m_vel + m_acc * time_delta;
-	m_vel[1] = m_vel[1] + 100;
+	m_vel = m_p / m_mass;
 	m_pos = m_pos + m_vel * time_delta;
-	
-	
-	m_p = m_vel * m_mass; //Momenta
+
 
 	//Speed Clamping at Rest
 	if(m_vel.squaredNorm() < 0.00005){
@@ -64,8 +61,7 @@ void Ball::update(double time_delta, int b_zone)
 	//Air Drag
 	//applyForce(mult2f_cpy(m_vel, -10), time_delta);
 	
-	//Reset Acceleration to zero
-	m_acc = Eigen::Vector2f(0, 0);
+
 
 }
 
@@ -83,9 +79,11 @@ void Ball::attachWriter(rj::Writer<rj::StringBuffer> *dw)
 //Writes Particle Data to writer object, should be called after update()
 void Ball::writeData()
 {
+
 		// Data Writing //
 	dw->Key("p_data");
 	dw->StartObject();
+	// PRINT("YOTE")
 	// Position //
 		dw->Key("p");
 		dw->StartObject();
@@ -149,7 +147,6 @@ void Ball::writeData()
 		dw->EndObject();
 
 	// Radius //
-
 		dw->Key("r");
 		dw->Uint(m_radius);
 
@@ -157,32 +154,47 @@ void Ball::writeData()
 
 		dw->Key("v_mag");
 
-		double vel_mag = (double)m_vel.norm();
+		double vel_mag = (double)(m_p/m_mass).norm();
 		if(std::isnan(vel_mag)){
 			dw->Null();
 		}else{
 			dw->Double(vel_mag);
 		}
 	
+
 	dw->EndObject();
 }
 
-void Ball::addBucket(int bucketid)
+
+
+
+
+
+/////////////
+// Getters //
+/////////////
+
+float Ball::getRadius() const
 {
-	bucketids.emplace_back(bucketid);
-	//PRINT(bucketids.size())
+    return m_radius;
 }
 
-void Ball::clearBuckets()
+float Ball::getMass() const
 {
-	bucketids.clear();
-	bucketids.shrink_to_fit();
-	std::vector<int>().swap(bucketids);
+    return m_mass;
 }
 
-
-Ball::~Ball()
+Eigen::Vector2f &Ball::getPos()
 {
-	//printf("Ball %d Deleted\n", id);
+    return m_pos;
 }
 
+float Ball::getX() const
+{
+    return m_pos[0];
+}
+
+float Ball::getY() const
+{
+    return m_pos[1];
+}
