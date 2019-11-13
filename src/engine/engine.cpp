@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
     PRINT("\e[93m[STARTING SIM]\e[37m: " << "\e[92m" << fileName << "\e[37m")
 
     // ENGINE INSTANTIATION //
-   Simulation_Engine *Engine = new Simulation_Engine(&window, &dw, &config_st);
+   SimulationEngine::Simulation_Engine(&window, &dw, &config_st);
 
 
     // Frame Data SetUp //
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
         dw.Key("f-num");
         dw.Uint(i);
 
-        Engine->simLoop();
+        SimulationEngine::simLoop();
 
         // PERIODIC BUFFER FLUSH AND MEMORY FREE //
         if((i % config_st.MEMORY_FRAME_SAVE_THRESHOLD) == 0){
@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
     PRINT("COMPLETION TIME: "<< time << "seconds")
     PRINT("AVERAGE FPS: " << (double) config_st.FRAMELIMIT / time)
     // clean up :)
-    delete Engine;
+
     dw.Reset(docbuffer);
     docbuffer.Clear();
     docbuffer.ShrinkToFit();

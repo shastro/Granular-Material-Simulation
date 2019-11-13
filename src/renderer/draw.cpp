@@ -253,7 +253,7 @@ int main(int argc, char**argv) {
         //////////////////
 
         if (DRAW_GRID) {
-            drawGrid(sf::Color(50,50,50), cellsize, width, height, &window);
+            // drawGrid(sf::Color(50,50,50), cellsize, width, height, &window);
         }
 
         // DISPLAY //

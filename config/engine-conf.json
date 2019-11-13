@@ -1,15 +1,15 @@
 {
-	"SIM_FILENAME" : "hash",
+	"SIM_FILENAME" : "rot3",
 	"SIM_FILEPATH" : "../sim_data/",
-	"FRAMELIMIT" : 1000,
+	"FRAMELIMIT" : 1500,
 	"SUB_FRAME_COUNT" : 50,
-	"PARTICLE_COUNT"  : 500,
+	"PARTICLE_COUNT"  : 5000,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
 
 	"window" : {
 		"width"  : 1000,
 		"height" : 1000,
-		"spawnbuffer" : 10
+		"spawnbuffer" : 0
 
 	},
 
@@ -17,14 +17,14 @@
 	"MINIMIZE_DATA" : true,
 	"OPTIMIZE" : true,
 
-	"TIME_STEP_COEFFICIENT": 0.00005,
+	"TIME_STEP_COEFFICIENT": 0.2,
 
-	"MIN_RADIUS": 10,
+	"MIN_RADIUS": 5,
 	"MAX_RADIUS": 10,
-	"SPAWN_VEL": 0.9,
+	"SPAWN_VEL": 0.4,
 
-	"P_RATIO" : 0.001,
-	"YOUNGS_MODULUS" : 290000000000
+	"P_RATIO" : 0.00001,
+	"YOUNGS_MODULUS" : 2900
 
 
 

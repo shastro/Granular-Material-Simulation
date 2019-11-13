@@ -28,8 +28,8 @@ public:
 	unsigned int m_Id;
 	bool colliding;
 
-	int bucketids[4];
-	int bucketids_Max; //Keeps track of maximum valid index
+	float gtheta;
+
 	//std::vector<int> bucketids;
 
 private:
@@ -44,8 +44,8 @@ public:
 		:m_pos(pos[0], pos[1]), m_vel(vel[0], vel[1]), m_acc(0.0f,0.0f), m_mass(mass)
 	{
 		this->m_Id = id_in;
-		bucketids_Max = 0;
 		force_applied_count = 0;
+		gtheta = 0;
 		
 		//Constant Initialization
 		v_p = P_RATIO;

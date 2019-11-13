@@ -23,7 +23,14 @@ void Ball::update(double time_delta)
 
 	int b_zone = 0;
 		
-	applyForce(Eigen::Vector2f(0.0, 3000), time_delta); //Gravity 
+	float gmag = 750;
+	gtheta += 0.001;
+	applyForce(Eigen::Vector2f(gmag*cos(gtheta + 3.14159/4.0), gmag*sin(gtheta + 3.14159/4.0)), time_delta); //Gravity 
+
+	if((m_p / m_mass).squaredNorm() > 10000){
+		m_p.normalize();
+		m_p = m_p * 100 * m_mass;
+	}
 
 	//Integration of Newton's Laws
 	m_vel = m_p / m_mass;
@@ -40,22 +47,22 @@ void Ball::update(double time_delta)
 
 	//Edge Detection
 	if (m_pos[0] + m_radius > m_window->width - b_zone) {
-		m_pos[0] = m_window->width - b_zone - m_radius;
-		m_vel[0] *= -c_e;
+		m_pos[0] = m_window->width - b_zone - m_radius - 1;
+		m_p[0] *= -c_e;
 	}
 	if (m_pos[0] - m_radius < b_zone) {
-		m_pos[0] = m_radius + b_zone;
-		m_vel[0] *= -c_e;
+		m_pos[0] = m_radius + b_zone + 1;
+		m_p[0] *= -c_e;
 	}
 
 	if (m_pos[1] +  m_radius > m_window->height - b_zone) {
-		m_pos[1] = m_window->height - b_zone - m_radius;
-		m_vel[1] *= -c_e;
+		m_pos[1] = m_window->height - b_zone - m_radius - 1;
+		m_p[1] *= -c_e;
 	}
 
 	if (m_pos[1] - m_radius < b_zone) {
 		m_pos[1] = m_radius + b_zone;
-		m_vel[1] *= -c_e;
+		m_p[1] *= -c_e;
 	}
 
 	//Air Drag
