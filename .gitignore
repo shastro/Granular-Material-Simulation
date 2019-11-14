@@ -9,6 +9,6 @@ build/obj/*
 
 bin/*
 
-sim_data/*
+sim_data/*.json
 
 .gitkeep
