@@ -44,6 +44,7 @@ struct config_data_t{
 	int SUB_FRAME_COUNT;
 	int PARTICLE_COUNT;
 	int COLLISION_MODE;
+	bool GRID_SPAWN;
 
 	int MEMORY_FRAME_SAVE_THRESHOLD;
 	bool MINIMIZE_DATA;
@@ -57,6 +58,8 @@ struct config_data_t{
 
 	double P_RATIO;
 	double YOUNGS_MODULUS;
+
+
 
 };
 #endif

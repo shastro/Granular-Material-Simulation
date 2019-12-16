@@ -69,33 +69,77 @@ namespace SimulationEngine
 		dw->Key("CELLSIZE");
 		dw->Uint(cellsize);
 
-		//Create Balls with random initial data.
-		for (int i = 0; i < nParticles; i++) {
 
-			int radius;
-			if (conf->MIN_RADIUS != conf->MAX_RADIUS) {
-				radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS);
-			} else {
-				radius = conf->MIN_RADIUS;
+		if(!conf->GRID_SPAWN){
+			//Create Balls with random initial data.
+			for (int i = 0; i < nParticles; i++) {
+
+				int radius;
+				if (conf->MIN_RADIUS != conf->MAX_RADIUS) {
+					radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS);
+				} else {
+					radius = conf->MIN_RADIUS;
+				}
+
+				int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
+				int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
+
+				float s_vel = (float)conf->SPAWN_VEL;
+				float vel_x = frandom(-1.0 * s_vel, s_vel);
+				float vel_y = frandom(-1.0 * s_vel, s_vel);
+
+				float mass = radius * radius * 3.14159 * 0.25;
+
+				Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i, conf->P_RATIO, conf->YOUNGS_MODULUS);
+				ball->attachWriter(dw);
+
+				vecBalls.push_back(ball);
+
 			}
+		} else {
 
-			// for (int x = 0; x < nParticles; x+= radius)
+			int p_index = 0;
+			int pos_x = 0;
+			int pos_y = 0;
 
-			int pos_x  = random(radius + 2, window->width  - window->spawnbuffer - radius - 2); //Places objects randomely with small buffer to prevent wall intersections on creation
-			int pos_y  = random(radius + 2, window->height - window->spawnbuffer - radius  - 2);
+			//Grid Spawn
+			PRINT(window->width << " "<< window->height)
+			for(pos_x = 0; pos_x < (window->width - 2*conf->MAX_RADIUS); pos_x += 2*conf->MAX_RADIUS){
 
-			float s_vel = (float)conf->SPAWN_VEL;
-			float vel_x = frandom(-1.0 * s_vel, s_vel);
-			float vel_y = frandom(-1.0 * s_vel, s_vel);
+				for(pos_y = 0; pos_y < (window->height - 2*conf->MAX_RADIUS); pos_y+= 2*conf->MAX_RADIUS){
 
-			float mass = radius * radius * 3.14159 * 0.25;
+					if(p_index >= conf->PARTICLE_COUNT){
 
-			Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, i, conf->P_RATIO, conf->YOUNGS_MODULUS);
-			ball->attachWriter(dw);
+						break;
+					}
+					
+					
+					int radius;
+					if (conf->MIN_RADIUS != conf->MAX_RADIUS) {
+						radius = random(conf->MIN_RADIUS, conf->MAX_RADIUS);
+					} else {
+						radius = conf->MIN_RADIUS;
+					}
 
-			vecBalls.push_back(ball);
+					float s_vel = (float)conf->SPAWN_VEL;
+					float vel_x = frandom(-1.0 * s_vel, s_vel);
+					float vel_y = frandom(-1.0 * s_vel, s_vel);
 
+					float mass = radius * radius * 3.14159 * 0.25;
+
+
+					PRINT(pos_x << " "<< pos_y << " "<< p_index)
+					Ball *ball = new Ball(Eigen::Vector2f((float)pos_x, (float)pos_y), Eigen::Vector2f(vel_x, vel_y), radius, mass, window, p_index, conf->P_RATIO, conf->YOUNGS_MODULUS);
+					ball->attachWriter(dw);
+
+					vecBalls.push_back(ball);
+					p_index++;
+
+				}
+
+			}
 		}
+
 		PRINT("ENGINE CREATED")
 	}
 

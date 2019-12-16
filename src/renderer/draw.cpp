@@ -318,7 +318,7 @@ int main(int argc, char**argv) {
     sf::Event newevent;
     while (1) {
 
-
+        
 
         window.pollEvent(newevent);
 

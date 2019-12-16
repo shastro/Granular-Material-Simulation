@@ -23,8 +23,9 @@ void Ball::update(double time_delta)
 
 	int b_zone = 0;
 		
-	float gmag = 750;
-	gtheta += 0.001;
+	float gmag = 750 * 5;
+	gtheta += 0.0003;
+	// gtheta = -3.14159/2;
 	applyForce(Eigen::Vector2f(gmag*cos(gtheta + 3.14159/4.0), gmag*sin(gtheta + 3.14159/4.0)), time_delta); //Gravity 
 
 	if((m_p / m_mass).squaredNorm() > 10000){

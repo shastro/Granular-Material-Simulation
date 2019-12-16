@@ -56,14 +56,14 @@ void Particle::draw(bool DRAW_OUTLINE, int PARTICLE_COUNT)
     // }else{
     double hue_val;
     int min = 0;
-    int max = 200;
+    int max = 500;
     if (m_v_mag < max) {
         hue_val = l_map(m_v_mag, min, max, 235, 0);
 
     } else {
         hue_val = 0;
     }
-    //hue_val = l_map(m_id, 0, PARTICLE_COUNT, 235, 0);
+    hue_val = l_map(m_id, 0, PARTICLE_COUNT, 300, 0);
 
     m_color = hsv((int)hue_val, 1.0f, 1.0f);
     //}

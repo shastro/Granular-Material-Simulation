@@ -1,10 +1,11 @@
 {
-	"SIM_FILENAME" : "rot3",
+	"SIM_FILENAME" : "rot6",
 	"SIM_FILEPATH" : "../sim_data/",
-	"FRAMELIMIT" : 1500,
+	"FRAMELIMIT" : 2000,
 	"SUB_FRAME_COUNT" : 50,
 	"PARTICLE_COUNT"  : 5000,
 	"COLLISION_MODE"  : "HERTZ_DAMP",
+	"GRID_SPAWN": true,
 
 	"window" : {
 		"width"  : 1000,
@@ -19,8 +20,8 @@
 
 	"TIME_STEP_COEFFICIENT": 0.2,
 
-	"MIN_RADIUS": 5,
-	"MAX_RADIUS": 10,
+	"MIN_RADIUS": 7,
+	"MAX_RADIUS": 7,
 	"SPAWN_VEL": 0.4,
 
 	"P_RATIO" : 0.00001,

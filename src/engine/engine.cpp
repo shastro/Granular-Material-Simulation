@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
         const char *SIM_FILENAME   = configdoc["SIM_FILENAME"].GetString();
         const char *SIM_FILEPATH   = configdoc["SIM_FILEPATH"].GetString();
         const char *COLLISION_MODE = configdoc["COLLISION_MODE"].GetString();
+        config_st.GRID_SPAWN       = configdoc["GRID_SPAWN"].GetBool();
 
         if(strcmp(COLLISION_MODE, "HERTZ") == 0){
             config_st.COLLISION_MODE = HERTZ;
