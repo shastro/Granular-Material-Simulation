@@ -24,7 +24,7 @@ void Ball::update(double time_delta)
 	int b_zone = 0;
 		
 	float gmag = 750 * 5;
-	gtheta += 0.0003;
+	gtheta += 0.0000;
 	// gtheta = -3.14159/2;
 	applyForce(Eigen::Vector2f(gmag*cos(gtheta + 3.14159/4.0), gmag*sin(gtheta + 3.14159/4.0)), time_delta); //Gravity 
 
@@ -33,7 +33,7 @@ void Ball::update(double time_delta)
 		m_p = m_p * 100 * m_mass;
 	}
 
-	//Integration of Newton's Laws
+	//Euler Method
 	m_vel = m_p / m_mass;
 	m_pos = m_pos + m_vel * time_delta;
 
@@ -43,37 +43,36 @@ void Ball::update(double time_delta)
 		m_vel = m_vel * 0;
 	}
 
-	float c_e = 0.5; //Coefficient of Elasticity (roughly speaking) this only applies to wall collision 
-
-
+	float sigma  = 500; //Scaling factor for forces
+	float width  = m_window->width;
+	float height = m_window->height;
+	// PRINT(m_window->height)
 	//Edge Detection
-	if (m_pos[0] + m_radius > m_window->width - b_zone) {
-		m_pos[0] = m_window->width - b_zone - m_radius - 1;
-		m_p[0] *= -c_e;
+	if (m_pos[0] + m_radius > width) {
+		float overlap = (m_pos[0] + m_radius) - width;
+		applyForce(Eigen::Vector2f(-sigma*(overlap*overlap), 0), time_delta);
 	}
-	if (m_pos[0] - m_radius < b_zone) {
-		m_pos[0] = m_radius + b_zone + 1;
-		m_p[0] *= -c_e;
-	}
-
-	if (m_pos[1] +  m_radius > m_window->height - b_zone) {
-		m_pos[1] = m_window->height - b_zone - m_radius - 1;
-		m_p[1] *= -c_e;
+	if (m_pos[0] - m_radius < 0) {
+		float overlap = fabs(m_pos[0] - m_radius);
+		applyForce(Eigen::Vector2f(sigma*overlap*overlap, 0), time_delta);
 	}
 
-	if (m_pos[1] - m_radius < b_zone) {
-		m_pos[1] = m_radius + b_zone;
-		m_p[1] *= -c_e;
+	if (m_pos[1] +  m_radius > height) {
+		float overlap = m_pos[1] + m_radius - height;
+		applyForce(Eigen::Vector2f(0, -sigma*(overlap*overlap)), time_delta);
+	}
+
+	if (m_pos[1] - m_radius < 0) {
+		float overlap = fabs(m_pos[1] - m_radius);
+		applyForce(Eigen::Vector2f(0, sigma*overlap*overlap), time_delta);
 	}
 
 	//Air Drag
 	//applyForce(mult2f_cpy(m_vel, -10), time_delta);
-	
 
 
 }
 
-//Spring Force, sums of momentum divided by radii sum squared
 
 //////////////////
 // DATA WRITING //

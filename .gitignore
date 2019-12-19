@@ -12,3 +12,4 @@ bin/*
 sim_data/*.json
 
 .gitkeep
+build/.gdb_history

@@ -79,6 +79,7 @@ int main(int argc, char**argv) {
     bool DRAW_TEXT    = configdoc["DRAW_TEXT"].GetBool();
     bool DRAW_OUTLINE = configdoc["DRAW_OUTLINE"].GetBool();
     bool DRAW_BOUNDING_BOX = configdoc["DRAW_BOUNDING_BOX"].GetBool();
+    bool COLOR_BY_INDEX = configdoc["COLOR_BY_INDEX"].GetBool();
     const char *data_path   = configdoc["DATA_PATH"].GetString();
 
     PRINT("PARSING COMPLETE")
@@ -98,6 +99,7 @@ int main(int argc, char**argv) {
 
 
     int FRAMECOUNT = data["FRAMELIMIT"].GetInt();
+    int PARTICLE_COUNT = data["PARTICLE_COUNT"].GetInt();
 
     // WINDOW SETUP //
     sf::ContextSettings settings;
@@ -106,6 +108,7 @@ int main(int argc, char**argv) {
     int height = data["WINDOW_DATA"]["height"].GetInt();
     sf::RenderWindow window(sf::VideoMode(width, height),
                             (std::string("Rendering Sim: ") + filename).c_str(), sf::Style::Default, settings);
+
 
 
     PRINT("INITIALIZING PARTICLES")
@@ -225,7 +228,7 @@ int main(int argc, char**argv) {
         ///////////////////////
 
         for (auto & particle : particles) {
-            particle->draw(DRAW_OUTLINE, data["PARTICLE_COUNT"].GetInt());
+            particle->draw(DRAW_OUTLINE, COLOR_BY_INDEX, PARTICLE_COUNT);
         }
 
         if (DRAW_BOUNDING_BOX) {

@@ -38,7 +38,7 @@ public:
 public: 
     void updateData(struct p_data_t& p_data);
     void drawBoundingBox();
-    void draw(bool DRAW_OUTLINE, int PARTICLE_COUNT);
+    void draw(bool DRAW_OUTLINE, bool COLOR_BY_INDEX, int PARTICLE_COUNT);
 
 };
 

@@ -12,7 +12,6 @@ project "GranularSimulation"
     buildoptions{ "-g", "-O3"} --"-O3",
     files {"../src/engine/*.cpp", "../src/utils/*.cpp"}
     -- symbols "On"
-    --11.69
     -- configuration "Debug"
     -- symbols "On"
 

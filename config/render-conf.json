@@ -3,6 +3,7 @@
     "FRAMERATE": 60,
     "DRAW_TEXT": true,
     "DRAW_OUTLINE": false,
-    "DRAW_BOUNDING_BOX": false
+    "DRAW_BOUNDING_BOX": false,
+    "COLOR_BY_INDEX": true
 
 }

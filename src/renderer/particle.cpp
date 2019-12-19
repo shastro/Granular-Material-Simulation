@@ -45,7 +45,7 @@ void Particle::drawBoundingBox()
     m_window->draw(br);
 }
 
-void Particle::draw(bool DRAW_OUTLINE, int PARTICLE_COUNT)
+void Particle::draw(bool DRAW_OUTLINE, bool COLOR_BY_INDEX, int PARTICLE_COUNT)
 {
 
     sf::CircleShape center_disp;
@@ -54,6 +54,7 @@ void Particle::draw(bool DRAW_OUTLINE, int PARTICLE_COUNT)
     // if(colliding){
     //     m_color = sf::Color::Red;
     // }else{
+    
     double hue_val;
     int min = 0;
     int max = 500;
@@ -63,12 +64,12 @@ void Particle::draw(bool DRAW_OUTLINE, int PARTICLE_COUNT)
     } else {
         hue_val = 0;
     }
-    hue_val = l_map(m_id, 0, PARTICLE_COUNT, 300, 0);
+
+    if(COLOR_BY_INDEX)
+        hue_val = l_map(m_id, 0, PARTICLE_COUNT, 300, 0);
 
     m_color = hsv((int)hue_val, 1.0f, 1.0f);
-    //}
 
-    // PRINT("DRAWCALL PARTICLE")
     //Particle
     m_shape.setOrigin(m_radius, m_radius);
     m_shape.setRadius(m_radius);

@@ -372,7 +372,8 @@ namespace SimulationEngine
 		for (int i = 0; i < nSimulationSubSteps; i++) {
 
 			// Build Hash
-			shash->build(vecBalls);
+			if(conf->OPTIMIZE)
+				shash->build(vecBalls);
 
 			if ((conf->MINIMIZE_DATA == true) && (i == nSimulationSubSteps - 1)) {
 				dw->StartObject();
@@ -397,7 +398,9 @@ namespace SimulationEngine
 			}
 
 			// Clear Hash
-			shash->clear();
+			if(conf->OPTIMIZE)
+				shash->clear();
+			
 			std::cout << '\r' << "Sub-Frame Completion: " << std::setw(8)/* << std::setfill('0') */ << (100 * (float)(i + 1) / (float)nSimulationSubSteps) << "%" << std::flush;
 
 		}
